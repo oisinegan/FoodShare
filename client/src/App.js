@@ -1,55 +1,37 @@
 import "./App.css";
-import React, { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Landing from "./pages/Landing";
+import Context from "./pages/context";
 
 function App() {
-  const [exampleData, setExampleData] = useState();
-  const [exampleDataDB, setExampleDataDB] = useState({});
-
-  useEffect(() => {
-    fetch("/exampleRouter")
-      .then((res) => res.json())
-      .then((data) => {
-        setExampleData(data.message);
-      });
-  }, []);
-
-  const retrieveItems = () => {
-    fetch("/exampleDBconnection")
-      .then((res) => res.json())
-      .then((data) => {
-        setExampleDataDB(data);
-        console.log(data);
-      }, []);
-  };
+  //const context = useContext(myContext);
 
   return (
-    <div className="App">
-      <h1 class="text-4xl font-bold   my-4">Test</h1>
-      <p className="text-2xl font-semibold">
-        {exampleData ? exampleData : "fetching from backend..."}
-      </p>
+    <BrowserRouter>
+      <Context>
+        <Routes>
+          <Route index element={<Landing />} />
+          <Route path="Login" element={<Login />} />
+          <Route path="Register" element={<Register />} />
+          {/* <Route path="Rentals" element={<ShowAll />} />
+      <Route path="Filter" element={<Filter />} />
+      <Route path="Search" element={<Search />} />
+      <Route path="Property" element={<Property />} /> */}
 
-      <button
-        onClick={retrieveItems}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold my-8 py-2 px-4 rounded"
-      >
-        Database test
-      </button>
-
-      {exampleDataDB ? (
-        Object.keys(exampleDataDB).map((key, index) => {
-          return (
-            <div key={index}>
-              <p>
-                ID: {exampleDataDB[key].id}, Text: {exampleDataDB[key].text}
-              </p>
-            </div>
-          );
-        })
-      ) : (
-        <p>exampleDataDB is null</p>
-      )}
-    </div>
+          {/* {context === "undefined" ? (
+          <>
+            <Route path="Login" element={<Login />} />
+          </>
+        ) : (
+          <>
+            <Route path="PostAd" element={<PostAd />} />
+          </>
+        )} */}
+        </Routes>
+      </Context>
+    </BrowserRouter>
   );
 }
 
