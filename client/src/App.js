@@ -1,36 +1,33 @@
 import "./App.css";
+import { useContext } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Landing from "./pages/Landing";
-import Context from "./pages/context";
+
+import Post from "./pages/Post";
+import Donation from "./pages/Donation";
+import Profile from "./pages/Profile";
+import ContextUser, { myContext } from "./pages/Context";
 
 function App() {
-  //const context = useContext(myContext);
+  const context = useContext(myContext);
+  console.log(context);
 
   return (
     <BrowserRouter>
-      <Context>
+      <ContextUser>
         <Routes>
           <Route index element={<Landing />} />
           <Route path="Login" element={<Login />} />
           <Route path="Register" element={<Register />} />
-          {/* <Route path="Rentals" element={<ShowAll />} />
-      <Route path="Filter" element={<Filter />} />
-      <Route path="Search" element={<Search />} />
-      <Route path="Property" element={<Property />} /> */}
+          <Route path="Post" element={<Post />} />
+          <Route path="Donation" element={<Donation />} />
+          <Route path="Profile" element={<Profile />} />
 
-          {/* {context === "undefined" ? (
-          <>
-            <Route path="Login" element={<Login />} />
-          </>
-        ) : (
-          <>
-            <Route path="PostAd" element={<PostAd />} />
-          </>
-        )} */}
+          {context === "null" ? <></> : <></>}
         </Routes>
-      </Context>
+      </ContextUser>
     </BrowserRouter>
   );
 }

@@ -47,6 +47,12 @@ app.use("/getUser", getUserRouter);
 const registerRouter = require("./routes/Register");
 app.use("/Register", registerRouter);
 
+const postAdRouter = require("./routes/PostAd");
+app.use("/PostAd", postAdRouter);
+
+const getAllItemsRouter = require("./routes/getAllItems");
+app.use("/getAllItems", getAllItemsRouter);
+
 app.listen(process.env.PORT, () => {
   console.log("Server started on server " + process.env.PORT);
 });

@@ -24,7 +24,7 @@ function Register() {
 
     const result = await response.json();
     if (result) {
-      window.location.href = "http://localhost:3000/Login";
+      window.location.href = "https://localhost:3000/Login";
     } else {
       alert("ERROR: USER ALREADY EXISTS");
     }
