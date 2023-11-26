@@ -8,7 +8,7 @@ router.post("/", (req, res) => {
   let info = req.body;
 
   const sql =
-    "INSERT INTO ads (`item`, `image_url`, `brand`, `category`, `userId`, `dateTime`) VALUES ('" +
+    "INSERT INTO ads (`item`, `image_url`, `brand`, `category`, `userId`,`userName`, `dateTime`) VALUES ('" +
     info.item +
     "', '" +
     info.image_url +
@@ -18,6 +18,8 @@ router.post("/", (req, res) => {
     info.category +
     "', '" +
     info.userId +
+    "', '" +
+    info.userName +
     "', '" +
     info.dateTime +
     "')";

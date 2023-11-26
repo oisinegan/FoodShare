@@ -20,6 +20,7 @@ export default function ContextUser({ children }) {
     }
 
     console.log(user);
-  }, [user]);
+    // eslint-disable-next-line
+  }, []);
   return <myContext.Provider value={user}>{children}</myContext.Provider>;
 }
