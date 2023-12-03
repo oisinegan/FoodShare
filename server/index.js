@@ -53,6 +53,9 @@ app.use("/PostAd", postAdRouter);
 const getAllItemsRouter = require("./routes/getAllItems");
 app.use("/getAllItems", getAllItemsRouter);
 
+const retrieveUserAdsRouter = require("./routes/retrieveUserAds");
+app.use("/retrieveUserAds", retrieveUserAdsRouter);
+
 app.listen(process.env.PORT, () => {
   console.log("Server started on server " + process.env.PORT);
 });

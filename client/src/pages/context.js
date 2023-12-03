@@ -3,7 +3,7 @@ import { decodeToken } from "react-jwt";
 
 export const myContext = createContext();
 export default function ContextUser({ children }) {
-  const [user, setUser] = useState([{}]);
+  const [user, setUser] = useState(undefined);
   console.log(user);
   useEffect(() => {
     const token = localStorage.getItem("token");

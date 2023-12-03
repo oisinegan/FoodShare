@@ -2,11 +2,13 @@ const express = require("express");
 const router = express.Router();
 const connection = require("../config/dbConfig");
 
-router.get("/", (req, res) => {
+router.post("/", (req, res) => {
+  let info = req.body;
+  console.log(info);
   connection.connect();
-
+  console.log(info.id);
   connection.query(
-    "SELECT * FROM ads;",
+    "SELECT * FROM ads WHERE userId= " + info.id + ";",
 
     (err, rows, fields) => {
       if (err) throw err;
@@ -33,7 +35,7 @@ router.get("/", (req, res) => {
           dateTime,
         });
       });
-
+      console.log(ads);
       res.send(ads);
     }
   );
