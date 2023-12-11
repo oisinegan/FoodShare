@@ -5,6 +5,7 @@ import Nav from "../components/nav";
 
 export default function Landing() {
   const [items, setItems] = useState({});
+  const [isClicked, setIsClicked] = useState(false);
   // const [noItems, setNoItems] = useState({});
   const user = useContext(myContext);
   console.log(user);
@@ -27,6 +28,30 @@ export default function Landing() {
       });
 
     console.log(items["0"]);
+  };
+
+  const registerInterest = async (item) => {
+    console.log(user.name);
+    const response = await fetch("/registerInterest", {
+      method: "post",
+      body: JSON.stringify({
+        adId: item.id,
+        author: item.userId,
+        userInterested: user.id,
+        userName: user.name,
+      }),
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result = await response.json();
+    if (result) {
+      //setIsClicked(true);
+    } else {
+      alert("ERROR: USER ALREADY EXISTS");
+    }
   };
 
   return (
@@ -78,10 +103,20 @@ export default function Landing() {
                               Posted by:{" "}
                               <span className="font-bold">{item.userName}</span>
                             </p>
+
                             <div className="flex justify-center">
-                              <button className="text-white bg-blue-800 p-2 mt-4 rounded ">
-                                I'm interested!
-                              </button>
+                              {item.userId === user.id ? (
+                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                  View interest
+                                </button>
+                              ) : (
+                                <button
+                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                  onClick={() => registerInterest(item)}
+                                >
+                                  Im interested!
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -130,9 +165,18 @@ export default function Landing() {
                               <span className="font-bold">{item.userName}</span>
                             </p>
                             <div className="flex justify-center">
-                              <button className="text-white bg-blue-800 p-2 mt-4 rounded ">
-                                I'm interested!
-                              </button>
+                              {item.userId === user.id ? (
+                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                  View interest
+                                </button>
+                              ) : (
+                                <button
+                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                  onClick={() => registerInterest(item)}
+                                >
+                                  Im interested!
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -182,9 +226,18 @@ export default function Landing() {
                               <span className="font-bold">{item.userName}</span>
                             </p>
                             <div className="flex justify-center">
-                              <button className="text-white bg-blue-800 p-2 mt-4 rounded ">
-                                I'm interested!
-                              </button>
+                              {item.userId === user.id ? (
+                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                  View interest
+                                </button>
+                              ) : (
+                                <button
+                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                  onClick={() => registerInterest(item)}
+                                >
+                                  Im interested!
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -234,9 +287,18 @@ export default function Landing() {
                               <span className="font-bold">{item.userName}</span>
                             </p>
                             <div className="flex justify-center">
-                              <button className="text-white bg-blue-800 p-2 mt-4 rounded ">
-                                I'm interested!
-                              </button>
+                              {item.userId === user.id ? (
+                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                  View interest
+                                </button>
+                              ) : (
+                                <button
+                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                  onClick={() => registerInterest(item)}
+                                >
+                                  Im interested!
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -286,9 +348,18 @@ export default function Landing() {
                               <span className="font-bold">{item.userName}</span>
                             </p>
                             <div className="flex justify-center">
-                              <button className="text-white bg-blue-800 p-2 mt-4 rounded ">
-                                I'm interested!
-                              </button>
+                              {item.userId === user.id ? (
+                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                  View interest
+                                </button>
+                              ) : (
+                                <button
+                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                  onClick={() => registerInterest(item)}
+                                >
+                                  Im interested!
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -338,9 +409,18 @@ export default function Landing() {
                               <span className="font-bold">{item.userName}</span>
                             </p>
                             <div className="flex justify-center">
-                              <button className="text-white bg-blue-800 p-2 mt-4 rounded ">
-                                I'm interested!
-                              </button>
+                              {item.userId === user.id ? (
+                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                  View interest
+                                </button>
+                              ) : (
+                                <button
+                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                  onClick={() => registerInterest(item)}
+                                >
+                                  Im interested!
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -390,9 +470,18 @@ export default function Landing() {
                               <span className="font-bold">{item.userName}</span>
                             </p>
                             <div className="flex justify-center">
-                              <button className="text-white bg-blue-800 p-2 mt-4 rounded ">
-                                I'm interested!
-                              </button>
+                              {item.userId === user.id ? (
+                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                  View interest
+                                </button>
+                              ) : (
+                                <button
+                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                  onClick={() => registerInterest(item)}
+                                >
+                                  Im interested!
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -442,9 +531,18 @@ export default function Landing() {
                               <span className="font-bold">{item.userName}</span>
                             </p>
                             <div className="flex justify-center">
-                              <button className="text-white bg-blue-800 p-2 mt-4 rounded ">
-                                I'm interested!
-                              </button>
+                              {item.userId === user.id ? (
+                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                  View interest
+                                </button>
+                              ) : (
+                                <button
+                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                  onClick={() => registerInterest(item)}
+                                >
+                                  Im interested!
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -494,9 +592,18 @@ export default function Landing() {
                               <span className="font-bold">{item.userName}</span>
                             </p>
                             <div className="flex justify-center">
-                              <button className="text-white bg-blue-800 p-2 mt-4 rounded ">
-                                I'm interested!
-                              </button>
+                              {item.userId === user.id ? (
+                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                  View interest
+                                </button>
+                              ) : (
+                                <button
+                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                  onClick={() => registerInterest(item)}
+                                >
+                                  Im interested!
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>

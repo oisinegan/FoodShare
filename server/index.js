@@ -56,6 +56,14 @@ app.use("/getAllItems", getAllItemsRouter);
 const retrieveUserAdsRouter = require("./routes/retrieveUserAds");
 app.use("/retrieveUserAds", retrieveUserAdsRouter);
 
+const registerInterestRouter = require("./routes/registerInterest");
+app.use("/registerInterest", registerInterestRouter);
+
+const getResponsesRouter = require("./routes/getResponses");
+app.use("/getResponses", getResponsesRouter);
+
+//getResponses
+
 app.listen(process.env.PORT, () => {
   console.log("Server started on server " + process.env.PORT);
 });
