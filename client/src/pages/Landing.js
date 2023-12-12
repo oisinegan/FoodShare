@@ -78,45 +78,49 @@ export default function Landing() {
                 .map(([index, item]) =>
                   item.category === "Dairy" ? (
                     <div key={item.id}>
-                      <div className="carousel-item w-80 ">
-                        <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-8">
-                          <p>
-                            <img
-                              class="rounded-t-lg w-full h-80 "
-                              src={item.image_url}
-                              alt=""
-                            />
-                          </p>
-                          <div class="p-5">
+                      <div className="carousel-item ">
+                        <div className="  w-80">
+                          <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-4">
                             <p>
-                              <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                {item.item}
-                              </h5>
+                              <img
+                                class="rounded-t-lg h-72 w-full "
+                                src={item.image_url}
+                                alt=""
+                              />
                             </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            <div class="p-5">
+                              <p>
+                                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white ">
+                                  {item.item}
+                                </h5>
+                              </p>
+                              {/* <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
                               {item.brand}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              {item.category}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              Posted by:{" "}
-                              <span className="font-bold">{item.userName}</span>
-                            </p>
+                            </p> */}
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                {item.category}
+                              </p>
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Posted by:{" "}
+                                <span className="font-bold">
+                                  {item.userName}
+                                </span>
+                              </p>
 
-                            <div className="flex justify-center">
-                              {item.userId === user.id ? (
-                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
-                                  View interest
-                                </button>
-                              ) : (
-                                <button
-                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
-                                  onClick={() => registerInterest(item)}
-                                >
-                                  Im interested!
-                                </button>
-                              )}
+                              <div className="flex justify-center">
+                                {item.userId === user.id ? (
+                                  <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                    View interest
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                    onClick={() => registerInterest(item)}
+                                  >
+                                    Im interested!
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -126,7 +130,7 @@ export default function Landing() {
                 )}
             </div>
           </div>
-          <div className="w-1/2 p-4 ">
+          <div className="w-3/4 p-4 ">
             <h1 class="mb-4 text-4xl my-8 mb-12 font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white text-center ">
               <span class="underline underline-offset-3 decoration-8 decoration-blue-400 dark:decoration-blue-600">
                 Sauces
@@ -139,44 +143,48 @@ export default function Landing() {
                 .map(([index, item]) =>
                   item.category === "Sauces" ? (
                     <div key={item.id}>
-                      <div className="carousel-item w-80 ">
-                        <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-8">
-                          <p>
-                            <img
-                              class="rounded-t-lg w-full h-80 "
-                              src={item.image_url}
-                              alt=""
-                            />
-                          </p>
-                          <div class="p-5">
+                      <div className="carousel-item  ">
+                        <div className="  w-80">
+                          <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-4">
                             <p>
-                              <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                {item.item}
-                              </h5>
+                              <img
+                                class="rounded-t-lg h-72 w-full "
+                                src={item.image_url}
+                                alt=""
+                              />
                             </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            <div class="p-5">
+                              <p>
+                                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                  {item.item}
+                                </h5>
+                              </p>
+                              {/* <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
                               {item.brand}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              {item.category}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              Posted by:{" "}
-                              <span className="font-bold">{item.userName}</span>
-                            </p>
-                            <div className="flex justify-center">
-                              {item.userId === user.id ? (
-                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
-                                  View interest
-                                </button>
-                              ) : (
-                                <button
-                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
-                                  onClick={() => registerInterest(item)}
-                                >
-                                  Im interested!
-                                </button>
-                              )}
+                            </p> */}
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                {item.category}
+                              </p>
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Posted by:{" "}
+                                <span className="font-bold">
+                                  {item.userName}
+                                </span>
+                              </p>
+                              <div className="flex justify-center">
+                                {item.userId === user.id ? (
+                                  <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                    View interest
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                    onClick={() => registerInterest(item)}
+                                  >
+                                    Im interested!
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -187,7 +195,7 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="w-1/2 p-4 ">
+          <div className="w-3/4 p-4 ">
             <h1 class="mb-4 text-4xl my-8 mb-12 font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white text-center ">
               <span class="underline underline-offset-3 decoration-8 decoration-blue-400 dark:decoration-blue-600">
                 Vegetables
@@ -200,24 +208,24 @@ export default function Landing() {
                 .map(([index, item]) =>
                   item.category === "Vegetables" ? (
                     <div key={item.id}>
-                      <div className="carousel-item w-80 ">
-                        <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-8">
+                      <div className="  w-80">
+                        <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-4">
                           <p>
                             <img
-                              class="rounded-t-lg w-full h-80 "
+                              class="rounded-t-lg h-72 w-full "
                               src={item.image_url}
                               alt=""
                             />
                           </p>
                           <div class="p-5">
                             <p>
-                              <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                              <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                                 {item.item}
                               </h5>
                             </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            {/* <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
                               {item.brand}
-                            </p>
+                            </p> */}
                             <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
                               {item.category}
                             </p>
@@ -248,7 +256,7 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="w-1/2 p-4 ">
+          <div className="w-3/4 p-4 ">
             <h1 class="mb-4 text-4xl my-8 mb-12 font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white text-center ">
               <span class="underline underline-offset-3 decoration-8 decoration-blue-400 dark:decoration-blue-600">
                 Fruits
@@ -261,44 +269,48 @@ export default function Landing() {
                 .map(([index, item]) =>
                   item.category === "Fruits" ? (
                     <div key={item.id}>
-                      <div className="carousel-item w-80 ">
-                        <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-8">
-                          <p>
-                            <img
-                              class="rounded-t-lg w-full h-80 "
-                              src={item.image_url}
-                              alt=""
-                            />
-                          </p>
-                          <div class="p-5">
+                      <div className="carousel-item ">
+                        <div className="  w-80">
+                          <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-4">
                             <p>
-                              <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                {item.item}
-                              </h5>
+                              <img
+                                class="rounded-t-lg h-72 w-full "
+                                src={item.image_url}
+                                alt=""
+                              />
                             </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            <div class="p-5">
+                              <p>
+                                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                  {item.item}
+                                </h5>
+                              </p>
+                              {/* <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
                               {item.brand}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              {item.category}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              Posted by:{" "}
-                              <span className="font-bold">{item.userName}</span>
-                            </p>
-                            <div className="flex justify-center">
-                              {item.userId === user.id ? (
-                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
-                                  View interest
-                                </button>
-                              ) : (
-                                <button
-                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
-                                  onClick={() => registerInterest(item)}
-                                >
-                                  Im interested!
-                                </button>
-                              )}
+                            </p> */}
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                {item.category}
+                              </p>
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Posted by:{" "}
+                                <span className="font-bold">
+                                  {item.userName}
+                                </span>
+                              </p>
+                              <div className="flex justify-center">
+                                {item.userId === user.id ? (
+                                  <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                    View interest
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                    onClick={() => registerInterest(item)}
+                                  >
+                                    Im interested!
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -309,7 +321,7 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="w-1/2 p-4 ">
+          <div className="w-3/4 p-4 ">
             <h1 class="mb-4 text-4xl my-8 mb-12 font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white text-center ">
               <span class="underline underline-offset-3 decoration-8 decoration-blue-400 dark:decoration-blue-600">
                 Cereal grains
@@ -322,44 +334,48 @@ export default function Landing() {
                 .map(([index, item]) =>
                   item.category === "Cereal grains" ? (
                     <div key={item.id}>
-                      <div className="carousel-item w-80 ">
-                        <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-8">
-                          <p>
-                            <img
-                              class="rounded-t-lg w-full h-80 "
-                              src={item.image_url}
-                              alt=""
-                            />
-                          </p>
-                          <div class="p-5">
+                      <div className="carousel-item  ">
+                        <div className="  w-80">
+                          <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-4">
                             <p>
-                              <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                {item.item}
-                              </h5>
+                              <img
+                                class="rounded-t-lg h-72 w-full "
+                                src={item.image_url}
+                                alt=""
+                              />
                             </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            <div class="p-5">
+                              <p>
+                                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                  {item.item}
+                                </h5>
+                              </p>
+                              {/* <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
                               {item.brand}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              {item.category}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              Posted by:{" "}
-                              <span className="font-bold">{item.userName}</span>
-                            </p>
-                            <div className="flex justify-center">
-                              {item.userId === user.id ? (
-                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
-                                  View interest
-                                </button>
-                              ) : (
-                                <button
-                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
-                                  onClick={() => registerInterest(item)}
-                                >
-                                  Im interested!
-                                </button>
-                              )}
+                            </p> */}
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                {item.category}
+                              </p>
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Posted by:{" "}
+                                <span className="font-bold">
+                                  {item.userName}
+                                </span>
+                              </p>
+                              <div className="flex justify-center">
+                                {item.userId === user.id ? (
+                                  <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                    View interest
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                    onClick={() => registerInterest(item)}
+                                  >
+                                    Im interested!
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -370,7 +386,7 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="w-1/2 p-4 ">
+          <div className="w-3/4 p-4 ">
             <h1 class="mb-4 text-4xl my-8 mb-12 font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white text-center ">
               <span class="underline underline-offset-3 decoration-8 decoration-blue-400 dark:decoration-blue-600">
                 Protein
@@ -383,44 +399,48 @@ export default function Landing() {
                 .map(([index, item]) =>
                   item.category === "Protein" ? (
                     <div key={item.id}>
-                      <div className="carousel-item w-80 ">
-                        <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-8">
-                          <p>
-                            <img
-                              class="rounded-t-lg w-full h-80 "
-                              src={item.image_url}
-                              alt=""
-                            />
-                          </p>
-                          <div class="p-5">
+                      <div className="carousel-item ">
+                        <div className="  w-80">
+                          <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-4">
                             <p>
-                              <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                {item.item}
-                              </h5>
+                              <img
+                                class="rounded-t-lg h-72 w-full "
+                                src={item.image_url}
+                                alt=""
+                              />
                             </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            <div class="p-5">
+                              <p>
+                                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                  {item.item}
+                                </h5>
+                              </p>
+                              {/* <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
                               {item.brand}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              {item.category}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              Posted by:{" "}
-                              <span className="font-bold">{item.userName}</span>
-                            </p>
-                            <div className="flex justify-center">
-                              {item.userId === user.id ? (
-                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
-                                  View interest
-                                </button>
-                              ) : (
-                                <button
-                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
-                                  onClick={() => registerInterest(item)}
-                                >
-                                  Im interested!
-                                </button>
-                              )}
+                            </p> */}
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                {item.category}
+                              </p>
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Posted by:{" "}
+                                <span className="font-bold">
+                                  {item.userName}
+                                </span>
+                              </p>
+                              <div className="flex justify-center">
+                                {item.userId === user.id ? (
+                                  <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                    View interest
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                    onClick={() => registerInterest(item)}
+                                  >
+                                    Im interested!
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -431,7 +451,7 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="w-1/2 p-4 ">
+          <div className="w-3/4 p-4 ">
             <h1 class="mb-4 text-4xl my-8 mb-12 font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white text-center ">
               <span class="underline underline-offset-3 decoration-8 decoration-blue-400 dark:decoration-blue-600">
                 Snacks
@@ -444,44 +464,48 @@ export default function Landing() {
                 .map(([index, item]) =>
                   item.category === "Snacks" ? (
                     <div key={item.id}>
-                      <div className="carousel-item w-80 ">
-                        <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-8">
-                          <p>
-                            <img
-                              class="rounded-t-lg w-full h-80 "
-                              src={item.image_url}
-                              alt=""
-                            />
-                          </p>
-                          <div class="p-5">
+                      <div className="carousel-item  ">
+                        <div className="  w-80">
+                          <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-4">
                             <p>
-                              <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                {item.item}
-                              </h5>
+                              <img
+                                class="rounded-t-lg h-72 w-full "
+                                src={item.image_url}
+                                alt=""
+                              />
                             </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            <div class="p-5">
+                              <p>
+                                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                  {item.item}
+                                </h5>
+                              </p>
+                              {/* <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
                               {item.brand}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              {item.category}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              Posted by:{" "}
-                              <span className="font-bold">{item.userName}</span>
-                            </p>
-                            <div className="flex justify-center">
-                              {item.userId === user.id ? (
-                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
-                                  View interest
-                                </button>
-                              ) : (
-                                <button
-                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
-                                  onClick={() => registerInterest(item)}
-                                >
-                                  Im interested!
-                                </button>
-                              )}
+                            </p> */}
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                {item.category}
+                              </p>
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Posted by:{" "}
+                                <span className="font-bold">
+                                  {item.userName}
+                                </span>
+                              </p>
+                              <div className="flex justify-center">
+                                {item.userId === user.id ? (
+                                  <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                    View interest
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                    onClick={() => registerInterest(item)}
+                                  >
+                                    Im interested!
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -492,7 +516,7 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="w-1/2 p-4 ">
+          <div className="w-3/4 p-4 ">
             <h1 class="mb-4 text-4xl my-8 mb-12 font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white text-center ">
               <span class="underline underline-offset-3 decoration-8 decoration-blue-400 dark:decoration-blue-600">
                 Drinks
@@ -505,44 +529,48 @@ export default function Landing() {
                 .map(([index, item]) =>
                   item.category === "Drinks" ? (
                     <div key={item.id}>
-                      <div className="carousel-item w-80 ">
-                        <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-8">
-                          <p>
-                            <img
-                              class="rounded-t-lg w-full h-80 "
-                              src={item.image_url}
-                              alt=""
-                            />
-                          </p>
-                          <div class="p-5">
+                      <div className="carousel-item  ">
+                        <div className="  w-80">
+                          <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-4">
                             <p>
-                              <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                {item.item}
-                              </h5>
+                              <img
+                                class="rounded-t-lg h-72 w-full "
+                                src={item.image_url}
+                                alt=""
+                              />
                             </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            <div class="p-5">
+                              <p>
+                                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                  {item.item}
+                                </h5>
+                              </p>
+                              {/* <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
                               {item.brand}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              {item.category}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              Posted by:{" "}
-                              <span className="font-bold">{item.userName}</span>
-                            </p>
-                            <div className="flex justify-center">
-                              {item.userId === user.id ? (
-                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
-                                  View interest
-                                </button>
-                              ) : (
-                                <button
-                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
-                                  onClick={() => registerInterest(item)}
-                                >
-                                  Im interested!
-                                </button>
-                              )}
+                            </p> */}
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                {item.category}
+                              </p>
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Posted by:{" "}
+                                <span className="font-bold">
+                                  {item.userName}
+                                </span>
+                              </p>
+                              <div className="flex justify-center">
+                                {item.userId === user.id ? (
+                                  <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                    View interest
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                    onClick={() => registerInterest(item)}
+                                  >
+                                    Im interested!
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -553,7 +581,7 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="w-1/2 p-4 ">
+          <div className="w-3/4 p-4 ">
             <h1 class="mb-4 text-4xl my-8 mb-12 font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white text-center ">
               <span class="underline underline-offset-3 decoration-8 decoration-blue-400 dark:decoration-blue-600">
                 Alcohol
@@ -566,44 +594,46 @@ export default function Landing() {
                 .map(([index, item]) =>
                   item.category === "Alcohol" ? (
                     <div key={item.id}>
-                      <div className="carousel-item w-80 ">
-                        <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-8">
-                          <p>
-                            <img
-                              class="rounded-t-lg w-full h-80 "
-                              src={item.image_url}
-                              alt=""
-                            />
-                          </p>
-                          <div class="p-5">
+                      <div className="carousel-item  ">
+                        <div className="  w-80">
+                          <div class=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mt-4">
                             <p>
-                              <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                {item.item}
-                              </h5>
+                              <img
+                                class="rounded-t-lg h-72 w-full "
+                                src={item.image_url}
+                                alt=""
+                              />
                             </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              {item.brand}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              {item.category}
-                            </p>
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                              Posted by:{" "}
-                              <span className="font-bold">{item.userName}</span>
-                            </p>
-                            <div className="flex justify-center">
-                              {item.userId === user.id ? (
-                                <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
-                                  View interest
-                                </button>
-                              ) : (
-                                <button
-                                  className="text-white bg-blue-800 p-2 mt-4 rounded "
-                                  onClick={() => registerInterest(item)}
-                                >
-                                  Im interested!
-                                </button>
-                              )}
+                            <div class="p-5">
+                              <p>
+                                <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                  {item.item}
+                                </h5>
+                              </p>
+
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                {item.category}
+                              </p>
+                              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Posted by:{" "}
+                                <span className="font-bold">
+                                  {item.userName}
+                                </span>
+                              </p>
+                              <div className="flex justify-center">
+                                {item.userId === user.id ? (
+                                  <button className="text-white bg-gray-800 p-2 mt-4 rounded ">
+                                    View interest
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="text-white bg-blue-800 p-2 mt-4 rounded "
+                                    onClick={() => registerInterest(item)}
+                                  >
+                                    Im interested!
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>

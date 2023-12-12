@@ -12,7 +12,7 @@ router.post("/", (req, res) => {
 
     (err, rows, fields) => {
       if (err) throw err;
-      const ads = [{}];
+      const ads = [];
       rows.forEach((row) => {
         const {
           id,
@@ -35,6 +35,7 @@ router.post("/", (req, res) => {
           dateTime,
         });
       });
+      console.log("ADS");
       console.log(ads);
       res.send(ads);
     }
