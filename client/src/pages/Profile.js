@@ -1,9 +1,9 @@
 import React, { useContext, useState, useEffect } from "react";
 import Nav from "../components/nav";
-import { myContext } from "./Context";
+import { Context } from "../App";
 
 export default function Profile() {
-  const user = useContext(myContext);
+  const [user, setUser] = useContext(Context);
   const [items, setItems] = useState({});
   const [responses, setResponses] = useState({});
   const [isClicked, setIsClicked] = useState(false);
@@ -76,7 +76,7 @@ export default function Profile() {
             id="default-modal"
             tabindex="-1"
             aria-hidden="true"
-            className="fixed inset-0 flex items-center  justify-center z-50"
+            className="fixed inset-0  flex items-center  justify-center z-50"
           >
             <div class="relative p-4 w-full max-w-lg max-h-full">
               <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -111,7 +111,7 @@ export default function Profile() {
           id="default-modal"
           tabindex="-1"
           aria-hidden="true"
-          className="fixed inset-0 flex items-center  justify-center z-50"
+          className="fixed inset-0 overflow-y-scroll flex items-center  justify-center z-50"
         >
           <div class="relative p-4 w-full max-w-2xl max-h-full">
             <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -126,7 +126,7 @@ export default function Profile() {
                       </p>
 
                       <div className="flex justify-center">
-                        <button className="text-white bg-blue-800 p-1 mt-4 rounded ">
+                        <button className="text-white bg-blue-800 p-2 mt-4 rounded ">
                           Message
                         </button>
                       </div>
@@ -157,15 +157,15 @@ export default function Profile() {
       <Nav />
 
       {user !== undefined && (
-        <h1 class="mb-4 mx-16 text-4xl my-8 mb-12 font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white text-left ">
+        <h1 class="mb-4 mx-16 text-5xl my-8 mb-12 font-extrabold leading-none tracking-tight text-gray-900 dark:text-white text-left ">
           Hello{" "}
           <span class="underline underline-offset-3 decoration-8 decoration-blue-400 dark:decoration-blue-600">
             {user.name}
           </span>
         </h1>
       )}
-      <h1 class="mb-4 mx-16  my-8 mb-12 text-5xl text-center font-bold leading-none tracking-tight text-gray-900  dark:text-white text-left ">
-        Your ads
+      <h1 class="mb-4 mx-16  my-8 mb-12 text-4xl text-center font-bold leading-none tracking-tight text-gray-900  dark:text-white text-left ">
+        Your ads...
       </h1>
 
       {isClicked ? showResponses() : null}
@@ -212,6 +212,27 @@ export default function Profile() {
                       </div>
                     </div>
                   </div>
+                </div>
+              ) : null
+            )}
+        </div>
+      </div>
+
+      {/* DELETE */}
+      <h1 class="mb-4 mx-16  my-8 mb-12 text-4xl text-center font-bold leading-none tracking-tight text-gray-900  dark:text-white text-left ">
+        Your Groups...
+      </h1>
+
+      {isClicked ? showResponses() : null}
+      {console.log(items)}
+      <div className="flex justify-center mt-16">
+        <div className="carousel carousel-center w-3/4  space-x-4  rounded-box p-16 mx-4 bg-gray-100">
+          {Object.entries(items)
+            .reverse()
+            .map(([index, item]) =>
+              item ? (
+                <div key={item.id}>
+                  <div className="carousel-item h-72  "></div>
                 </div>
               ) : null
             )}

@@ -1,17 +1,22 @@
-import { myContext } from "../pages/Context";
-import { useContext } from "react";
+/*
+The reload is because its checking token inside of use effect
+*/
+import { useContext, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Context } from "../App";
+
 
 function Nav() {
   const navigate = useNavigate();
+  const [user, setUser] = useContext(Context);
 
   const logout = () => {
     localStorage.removeItem("token");
+    setUser(null);
     navigate("/Login");
   };
 
-  const context = useContext(myContext);
-  console.log(context);
+
 
   return (
     <nav class="bg-white border-gray-200 dark:bg-gray-900">
@@ -25,7 +30,7 @@ function Nav() {
           </Link>
         </li>
 
-        {context === "null" ? (
+        {user === null ? (
           <ul class="font-medium flex flex-row p-4 md:p-0 mt-4  rounded-lg  md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
             <li class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500">
               <Link to="/">Home</Link>

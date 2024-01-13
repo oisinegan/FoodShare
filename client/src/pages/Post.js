@@ -1,12 +1,12 @@
 import React, { useContext, useState, useRef, useCallback } from "react";
-import { myContext } from "./Context";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import Nav from "../components/nav";
 import moment from "moment";
 import Webcam from "react-webcam";
+import { Context } from "../App";
 
 export default function Post() {
-  const user = useContext(myContext);
+  const [user, setUser] = useContext(Context);
   const webCam = useRef(null);
   const [imgSource, setImgSource] = useState(null);
   const [isPhoto, setIsPhoto] = useState(false);
