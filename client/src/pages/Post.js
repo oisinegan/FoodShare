@@ -1,11 +1,10 @@
 import React, { useContext, useState, useRef, useCallback } from "react";
-import { Html5QrcodeScanner } from "html5-qrcode";
 import Nav from "../components/nav";
-import moment from "moment";
 import Webcam from "react-webcam";
 import { Context } from "../App";
 
 export default function Post() {
+  // eslint-disable-next-line
   const [user, setUser] = useContext(Context);
   const webCam = useRef(null);
   const [imgSource, setImgSource] = useState(null);
@@ -13,65 +12,29 @@ export default function Post() {
 
   console.log(user);
 
-  const [foodInfoName, setFoodInfoName] = useState(null);
-  const [foodInfoBrand, setFoodInfoBrand] = useState(null);
-  const [foodInfoCategory, setFoodInfoCategory] = useState(null);
-  const [isScanItemPressed, setIsScanItemPressed] = useState(false);
-
-  const scanItem = () => {
-    setIsScanItemPressed(true);
-    const scanner = new Html5QrcodeScanner(
-      "reader",
-      {
-        qrbox: {
-          width: 250,
-          height: 250,
-        },
-        fps: 5,
-      },
-      []
-    );
-
-    function success(res) {
-      scanner.clear();
-
-      getOpenFoodFactsAPI(res);
-    }
-    function err(err) {
-      console.warn(err);
-    }
-
-    scanner.render(success, err);
-    // eslint-disable-next-line
-  };
-
-  function getOpenFoodFactsAPI(res) {
-    fetch("https://world.openfoodfacts.org/api/v2/product/" + res + "json")
-      .then((response) => response.json())
-      .then((data) =>
-        getFoodInfo(
-          data.product.product_name,
-          data.product.brands,
-          data.product.image_front_url
-        )
-      )
-      .catch((error) => console.error("Error fetching data:", error));
-  }
+  const [foodInfo, setFoodInfo] = useState({
+    foodName: null,
+    brand: null,
+    size: null,
+    measurementType: null,
+    quant: null,
+    extraInfo: null,
+    postTo: null,
+    expiraryDate: null,
+  });
 
   async function postAd() {
     if (imgSource === null) {
       alert("Upload an image!");
     } else {
-      const date = moment().format("DD MM YYYY, h:mm:ss");
-
       const adInfo = {
-        item: foodInfoName,
-        image_url: imgSource,
-        brand: foodInfoBrand,
-        category: foodInfoCategory,
-        userId: user.id,
-        userName: user.name,
-        dateTime: date,
+        // item: foodInfoName,
+        // image_url: imgSource,
+        // brand: foodInfoBrand,
+        // category: foodInfoCategory,
+        // userId: user.id,
+        // userName: user.name,
+        // dateTime: date,
       };
 
       const response = await fetch("/PostAd", {
@@ -87,12 +50,6 @@ export default function Post() {
         window.location.href = "https://localhost:3000";
       }
     }
-  }
-
-  function getFoodInfo(name, brand, image) {
-    setFoodInfoName(name);
-    setFoodInfoBrand(brand);
-    setImgSource(image);
   }
 
   const takePicture = useCallback(() => {
@@ -118,7 +75,7 @@ export default function Post() {
         </h1>
         <div className="flex w-full justify-center items-center  mt-20">
           <div className="w-1/2 ">
-            <div className="flex flex-col  justify-center mt-8">
+            {/* <div className="flex flex-col  justify-center mt-8">
               <div className="flex justify-center">
                 <button
                   className="text-white bg-blue-800 p-4 rounded "
@@ -152,7 +109,7 @@ export default function Post() {
 
             <div class="inline-flex items-center justify-center w-full">
               <hr class="w-1/2 h-1  bg-gray-800   dark:bg-gray-700" />
-            </div>
+            </div> */}
 
             <form class="w-1/2 mx-auto mt-6" onSubmit={postAd}>
               <div class="mb-5">
@@ -166,8 +123,13 @@ export default function Post() {
                   type="text"
                   id="foodItem"
                   required
-                  value={foodInfoName}
-                  onChange={(event) => setFoodInfoName(event.target.value)}
+                  value={foodInfo.foodName}
+                  onChange={(event) =>
+                    setFoodInfo((prevFoodInfo) => ({
+                      ...prevFoodInfo,
+                      foodName: event.target.value,
+                    }))
+                  }
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
               </div>
@@ -181,38 +143,124 @@ export default function Post() {
                 </label>
                 <input
                   type="text"
-                  id="foodItem"
+                  id="foodBrand"
                   required
-                  value={foodInfoBrand}
-                  onChange={(event) => setFoodInfoBrand(event.target.value)}
+                  value={foodInfo.brand}
+                  onChange={(event) =>
+                    setFoodInfo((prevFoodInfo) => ({
+                      ...prevFoodInfo,
+                      brand: event.target.value,
+                    }))
+                  }
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
               </div>
+              <div className="mb-5">
+                <label
+                  for="size"
+                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Size
+                </label>
+                <div class="sm:flex rounded-lg shadow-sm">
+                  <input
+                    type="number"
+                    id="foodSize"
+                    required
+                    value={foodInfo.size}
+                    onChange={(event) =>
+                      setFoodInfo((prevFoodInfo) => ({
+                        ...prevFoodInfo,
+                        size: event.target.value,
+                      }))
+                    }
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  />
+                  <select
+                    id="measurementType"
+                    value={foodInfo.measurementType}
+                    required
+                    onChange={(event) =>
+                      setFoodInfo((prevFoodInfo) => ({
+                        ...prevFoodInfo,
+                        measurementType: event.target.value,
+                      }))
+                    }
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  >
+                    <option value="kilograms">Kilograms</option>
+                    <option value="grams">Grams</option>
+                    <option value="litres">Litres</option>
+                    <option value="milliliters">Milliliters</option>
+                  </select>
+                </div>
+              </div>
 
-              <label
-                for="countries"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Food category
-              </label>
-              <select
-                id="countries"
-                value={foodInfoCategory}
-                required
-                onChange={(event) => setFoodInfoCategory(event.target.value)}
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              >
-                <option value="">Please choose a category</option>
-                <option value="Dairy">Dairy</option>
-                <option value="Vegetables">Vegetables</option>
-                <option value="Fruits">Fruits</option>
-                <option value="Cereal grains">Cereal grains</option>
-                <option value="Protein">Protein</option>
-                <option value="Snacks">Snacks</option>
-                <option value="Drinks">Drinks</option>
-                <option value="Alcohol">Alcohol</option>
-                <option value="Sauces">Sauces</option>
-              </select>
+              <div className="mb-5">
+                <label
+                  for="date"
+                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Epirary date
+                </label>
+
+                <input
+                  type="date"
+                  id="date"
+                  required
+                  value={foodInfo.date}
+                  onChange={(event) =>
+                    setFoodInfo((prevFoodInfo) => ({
+                      ...prevFoodInfo,
+                      date: event.target.value,
+                    }))
+                  }
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                />
+              </div>
+              <div className="mb-5">
+                <label
+                  for="date"
+                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Post to
+                </label>
+
+                <select
+                  id="postTo"
+                  value={foodInfo.postTo}
+                  required
+                  onChange={(event) =>
+                    setFoodInfo((prevFoodInfo) => ({
+                      ...prevFoodInfo,
+                      postTo: event.target.value,
+                    }))
+                  }
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                >
+                  <option value="General">General</option>
+                  <option value="Group">Group</option>
+                </select>
+              </div>
+
+              <div class="mb-5">
+                <label
+                  for="foodItem"
+                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Extra information
+                </label>
+                <textarea
+                  id="extraInfo"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  onChange={(event) =>
+                    setFoodInfo((prevFoodInfo) => ({
+                      ...prevFoodInfo,
+                      extraInfo: event.target.value,
+                    }))
+                  }
+                ></textarea>
+              </div>
 
               <div className="flex justify-center mt-8">
                 {isPhoto === true ? (
@@ -279,50 +327,27 @@ export default function Post() {
             </form>
           </div>
           <div className=" w-1/2 flex justify-center">
-            <div class="w-3/4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-              <p>
-                {imgSource ? (
-                  <img
-                    class="rounded-t-lg w-full max-h-96"
-                    src={imgSource}
-                    alt=""
-                  />
-                ) : (
-                  <div className=" w-full h-96 bg-gray-300 flex items-center justify-center">
-                    <span className="text-gray-600">No Image</span>
-                  </div>
-                )}
-              </p>
-              <div class="p-5">
-                {foodInfoName ? (
-                  <p class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    {foodInfoName}
-                  </p>
-                ) : (
-                  <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    Item name
-                  </h5>
-                )}
-
-                {foodInfoBrand ? (
-                  <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                    {foodInfoBrand}
-                  </p>
-                ) : (
-                  <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                    Food Brand
-                  </p>
-                )}
-
-                {foodInfoCategory ? (
-                  <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                    {foodInfoCategory}
-                  </p>
-                ) : (
-                  <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                    choose a food category!
-                  </p>
-                )}
+            <div class="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+              {imgSource ? (
+                <img class="rounded-t-lg w-full " src={imgSource} alt="" />
+              ) : (
+                <div className=" w-full h-full bg-gray-300 flex items-center justify-center">
+                  <span className="text-gray-600">No Image</span>
+                </div>
+              )}
+              <div class="flex flex-col justify-between p-4 leading-normal">
+                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  {foodInfo.foodName}
+                </h5>
+                <p>Brand: {foodInfo.brand}</p>
+                <p>
+                  Size: {foodInfo.size} {foodInfo.measurementType}
+                </p>
+                <p>Expiry: {foodInfo.date}</p>
+                <p>Post to: {foodInfo.postTo}</p>
+                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                  Extra Info: {foodInfo.extraInfo}
+                </p>
               </div>
             </div>
           </div>

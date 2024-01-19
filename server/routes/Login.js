@@ -14,6 +14,7 @@ router.post("/", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (err) throw err;
     if (!user) {
+      console.log("NO USER");
       res.send({ user: false });
     } else {
       req.logIn(user, (err) => {

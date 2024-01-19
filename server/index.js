@@ -11,7 +11,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: process.env.URL_ADDRESS,
+    // origin: process.env.URL_ADDRESS,
+    origin: [
+      "http://192.168.1.8:8081",
+      "http://192.168.1.8:19006",
+      "http://192.168.1.8:19000",
+      "http://localhost:3000",
+      "https://localhost:3000",
+    ],
     credentials: true,
   })
 );
