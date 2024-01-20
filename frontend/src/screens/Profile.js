@@ -21,19 +21,22 @@ import Nav from "../components/Nav";
 function Profile({ navigation }) {
   const [user, setUser] = useContext(Context);
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.contentContainer}>
         <Text style={styles.title}>Profile screen {user.name}</Text>
-        <Nav />
       </View>
+      <Nav />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#fafaf9",
-    height: "100%",
+    backgroundColor: "white",
+    flex: 1,
+  },
+  contentContainer: {
+    flex: 1,
   },
   title: {
     fontSize: 25,

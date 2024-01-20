@@ -16,12 +16,14 @@ import {
 } from "react-native";
 import { decodeToken } from "react-jwt";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 import React, { useContext, useState } from "react";
 import { Context } from "../../App";
 
-function Nav({ navigation }) {
+function Nav() {
   const [user, setUser] = useContext(Context);
+  const navigation = useNavigation();
 
   return (
     <SafeAreaView>
@@ -65,7 +67,7 @@ function Nav({ navigation }) {
 
 const styles = StyleSheet.create({
   con: {
-    backgroundColor: "red",
+    backgroundColor: "lightgrey",
   },
   conInner: {
     marginHorizontal: "10%",

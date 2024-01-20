@@ -43,33 +43,33 @@ export default function App() {
           <Stack.Screen
             name="Landing"
             component={Landing}
-            options={{ headerShown: true }}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Login"
             component={Login}
-            options={{ headerShown: true }}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Register"
             component={Register}
-            options={{ headerShown: true }}
+            options={{ headerShown: false }}
           />
 
           <Stack.Screen
             name="Post"
             component={Post}
-            options={{ headerShown: true }}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Charity"
             component={Charity}
-            options={{ headerShown: true }}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Profile"
             component={Profile}
-            options={{ headerShown: true }}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       </Context.Provider>
