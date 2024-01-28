@@ -13,15 +13,76 @@ import {
   Dimensions,
   ImageBackground,
   StatusBar,
+  ScrollView,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../../App";
 import Nav from "../components/Nav";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import redIcon from "../images/redIcon.png";
+import * as Location from "expo-location";
+import { add } from "date-fns";
 
 function Landing({ navigation }) {
   const [user, setUser] = useContext(Context);
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  /*
+  - use user context for long and lat in profile page
+  - On proilfe user context shows long and lat nothing else. Check line 46 - 50 landing.ks
+  */
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      console.log("BEFOREW: Add loc to user");
+      console.log(user);
+      const long = location.coords.longitude;
+      const lat = location.coords.latitude;
+      const addLocToUser = { ...user, long, lat };
+      console.log("Add loc to user");
+      console.log(addLocToUser);
+
+      setUser(addLocToUser);
+      console.log(user);
+    })();
+  }, []);
+
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    fetchAllItems();
+  }, []);
+
+  const fetchAllItems = async () => {
+    try {
+      const response = await fetch("http://192.168.1.8:8000/getAllItems", {
+        method: "get",
+      });
+
+      const result = await response.json();
+      if (result) {
+        //console.log(result);
+        const filteredRes = result.filter(
+          (item) => Object.keys(item).length !== 0
+        );
+        setItems(filteredRes);
+      } else {
+        Alert.alert("ERROR", "ERR");
+      }
+    } catch (e) {
+      console.log("GET ERROR: " + e);
+      Alert.alert("ERROR", "ERROR");
+    }
+  };
 
   const logout = async () => {
     try {
@@ -34,7 +95,7 @@ function Landing({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.contentContainer}>
+      <ScrollView style={styles.contentContainer}>
         {user === null ? (
           <Text style={styles.title}>Landing screen </Text>
         ) : (
@@ -46,31 +107,36 @@ function Landing({ navigation }) {
           </>
         )}
 
-        <View style={styles.postContainer}>
-          <View style={styles.imageContainer}>
-            <Image
-              style={styles.image}
-              source={{
-                uri: "https://reactnative.dev/img/tiny_logo.png",
-              }}
-            />
-          </View>
-          <View style={styles.postInnerContainer}>
-            <Text style={styles.innerTitle}>Title</Text>
-            <View style={styles.postInnerInfoContainer}>
-              <Text style={styles.innerInfo}>Brand</Text>
-              <Text style={styles.innerInfo}>.</Text>
-              <Text style={styles.innerInfo}>Size</Text>
-              <Text style={styles.innerInfo}>.</Text>
-              <Text style={styles.innerInfo}>Expiry</Text>
+        {items.map((item) => (
+          <View style={styles.postContainer}>
+            <View style={styles.imageContainer}>
+              <Image
+                style={styles.image}
+                source={{
+                  uri: item.image_url,
+                }}
+              />
             </View>
-            <Text style={styles.extraInfo}>Extra</Text>
-            <View style={styles.postLikeButton}>
-              <Image source={redIcon} style={styles.postLikeButtonIcon} />
+            <View style={styles.postInnerContainer}>
+              <Text style={styles.innerTitle}>{item.item}</Text>
+              <View style={styles.postInnerInfoContainer}>
+                <Text style={styles.innerInfo}>{item.brand}</Text>
+                <Text style={styles.innerInfo}>.</Text>
+                <Text style={styles.innerInfo}>
+                  {item.size + " " + item.measurementType}{" "}
+                </Text>
+                <Text style={styles.innerInfo}>.</Text>
+                <Text style={styles.innerInfo}>Expiry: {item.expiryDate}</Text>
+              </View>
+              <Text style={styles.extraInfo}>{item.extraInfo}</Text>
+              <View style={styles.postLikeButton}>
+                <Image source={redIcon} style={styles.postLikeButtonIcon} />
+              </View>
             </View>
           </View>
-        </View>
-      </View>
+        ))}
+      </ScrollView>
+
       <Nav />
     </SafeAreaView>
   );
@@ -159,12 +225,13 @@ const styles = StyleSheet.create({
   postInnerInfoContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginHorizontal: 60,
+
+    width: "100%",
+    paddingHorizontal: 20,
     marginTop: 20,
   },
   innerInfo: {
     fontSize: 15,
-    paddingLeft: 15,
   },
   extraInfo: {
     marginTop: 20,

@@ -17,23 +17,33 @@ router.get("/", (req, res) => {
           item,
           image_url,
           brand,
-          category,
           userId,
-          userName,
-          dateTime,
+          expiryDate,
+          size,
+          measurementType,
+          quant,
+          extraInfo,
+          datePosted,
+          timePosted,
+          postTo,
         } = row;
         ads.push({
           id,
           item,
           image_url,
           brand,
-          category,
           userId,
-          userName,
-          dateTime,
+          expiryDate,
+          size,
+          measurementType,
+          quant,
+          extraInfo,
+          datePosted,
+          timePosted,
+          postTo,
         });
       });
-
+      console.log(ads);
       res.send(ads);
     }
   );

@@ -69,8 +69,6 @@ app.use("/registerInterest", registerInterestRouter);
 const getResponsesRouter = require("./routes/getResponses");
 app.use("/getResponses", getResponsesRouter);
 
-//getResponses
-
 app.listen(process.env.PORT, () => {
   console.log("Server started on server " + process.env.PORT);
 });

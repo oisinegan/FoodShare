@@ -8,35 +8,123 @@ import {
   View,
   Button,
   Alert,
+  ScrollView,
   TextInput,
   Image,
   Dimensions,
   ImageBackground,
   StatusBar,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../../App";
 import Nav from "../components/Nav";
 import postIcon from "../images/postIcon.png";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { format } from "date-fns";
 import { SelectList } from "react-native-dropdown-select-list";
+import * as ImagePicker from "expo-image-picker";
+import uuid from "react-native-uuid";
 
 function Post({ navigation }) {
   const [user, setUser] = useContext(Context);
+  console.log(user);
+  const [info, setInfo] = useState({
+    userId: user.id,
+  });
+  const [image, setImage] = useState(null);
+
+  const handleChange = (name, val) => {
+    setInfo((prev) => {
+      return { ...prev, [name]: val.trim() };
+    });
+
+    // console.log(info);
+  };
+
+  const handleSubmit = async () => {
+    if (
+      !info.foodName ||
+      !info.brand ||
+      !info.size ||
+      !info.expiryDate ||
+      !info.measurementType ||
+      !info.postTo ||
+      !info.quant ||
+      !info.extraInfo ||
+      !image
+    ) {
+      Alert.alert("ERROR", "Fill in all fields!");
+      return;
+    }
+
+    try {
+      const data = new FormData();
+      data.append("image", image);
+
+      //Add info items to data
+      Object.keys(info).forEach((key) => {
+        data.append(key, info[key]);
+      });
+
+      console.log(data);
+
+      const response = await fetch("http://192.168.1.8:8000/PostAd", {
+        method: "post",
+        body: data,
+      });
+
+      const result = await response.json();
+      console.log("t");
+      if (result) {
+      } else {
+        Alert.alert("ERROR", "ERR");
+      }
+    } catch (e) {
+      console.log("FETCH ERROR: " + e);
+      Alert.alert("ERROR", "ERROR");
+    }
+  };
+
+  async function pickImage() {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    // console.log(result.uri);
+    // console.log(result.assets[0].uri);
+
+    if (!result.canceled) {
+      const timeStamp = Date.now();
+      const uniqueCode = uuid.v4();
+      const imgName = user.id + "_" + timeStamp + "_" + uniqueCode + ".jpeg";
+
+      console.log("IMAGE NAME: " + imgName);
+
+      setImage({
+        uri: result.assets[0].uri,
+        name: imgName,
+        type: "image/jpeg",
+      });
+    }
+  }
 
   const [date, setDate] = useState(new Date());
-  const [formattedDate, setFormattedDate] = useState(null);
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
 
   const [selectedUnit, setSelectedUnit] = React.useState("");
+  const [selectedPostTo, setSelectedPostTo] = React.useState("");
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
     setShow(false);
+    const formattedDate = format(date, "dd-MM-yyyy");
+    info.expiryDate = formattedDate;
     setDate(currentDate);
-    setFormattedDate(format(currentDate, "dd-MM-yyyy"));
   };
 
   const showMode = (currentMode) => {
@@ -55,78 +143,86 @@ function Post({ navigation }) {
     { key: "Ml", value: "Ml" },
   ];
 
+  const postTo = [
+    { key: "Group", value: "Group" },
+    { key: "General", value: "General" },
+  ];
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.contentContainer}>
-        <View style={styles.contentContainerPost}>
-          <Image source={postIcon} style={styles.postButtonIcon} />
-        </View>
-
+      <ScrollView style={styles.contentContainer}>
         <Text style={styles.title}>Post screen {user.name}</Text>
-        <View style={styles.postContainer}>
-          <View style={styles.imageContainer}>
-            <Image
-              style={styles.image}
-              source={{
-                uri: "https://reactnative.dev/img/tiny_logo.png",
-              }}
-            />
-          </View>
-          <View style={styles.postInnerContainer}>
-            <TextInput
-              placeholder="Item"
-              style={styles.innerTitle}
-              // onChangeText={(val) => handleChange("username", val)}
-            />
-            <View style={styles.postInnerInfoContainer}>
-              <TextInput
-                placeholder="Brand"
-                style={styles.innerInfo}
-                // onChangeText={(val) => handleChange("username", val)}
-              />
 
-              <Text style={styles.innerInfo}>.</Text>
-              <TextInput
-                placeholder="Size"
-                style={styles.innerInfo}
-                // onChangeText={(val) => handleChange("username", val)}
-              />
-              <Text style={styles.innerInfo}>.</Text>
-              <TextInput
-                placeholder="Unit"
-                style={styles.innerInfo}
-                // onChangeText={(val) => handleChange("username", val)}
-              />
-              <SelectList
-                setSelected={(val) => setSelectedUnit(val)}
-                data={units}
-                save="value"
-              />
-              <Text style={styles.innerInfo}>.</Text>
+        <TextInput
+          placeholder="Item"
+          style={styles.innerInfo}
+          onChangeText={(val) => handleChange("foodName", val)}
+        />
+        <TextInput
+          placeholder="Brand"
+          style={styles.innerInfo}
+          onChangeText={(val) => handleChange("brand", val)}
+        />
 
-              {show ? (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={date}
-                  mode={mode}
-                  is24Hour={true}
-                  onChange={onChange}
-                />
-              ) : (
-                <Text style={styles.innerInfo} onPress={showDatepicker}>
-                  {formattedDate ? `${formattedDate}` : "Expiry"}
-                </Text>
-              )}
-            </View>
+        <View style={styles.imageCon}>
+          <Button title="Pick an image from camera roll" onPress={pickImage} />
+          {image && <Image source={{ uri: image.uri }} style={styles.image} />}
+        </View>
 
-            <TextInput
-              placeholder="Extra Information"
-              style={styles.extraInfo}
-              // onChangeText={(val) => handleChange("username", val)}
+        <View style={styles.sizeCon}>
+          <TextInput
+            placeholder="Size"
+            keyboardType={"number-pad"}
+            style={styles.innerInfoSize}
+            onChangeText={(val) => handleChange("size", val)}
+          />
+          <SelectList
+            setSelected={(val) => handleChange("measurementType", val)}
+            style={styles.innerInfo}
+            data={units}
+            save="value"
+          />
+        </View>
+        <View style={styles.sizeCon}>
+          <Text style={styles.expiryInfo}>Expiry:</Text>
+          <View style={styles.dateTimeCon}>
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={date}
+              mode={mode}
+              style={styles.date}
+              is24Hour={true}
+              onChange={onChange}
             />
           </View>
         </View>
-      </View>
+        <TextInput
+          placeholder="Quantity"
+          // keyboardType={Device.isAndroid ? "numeric" : "number-pad"}
+          keyboardType={"number-pad"}
+          style={styles.innerInfo}
+          onChangeText={(val) => handleChange("quant", val)}
+        />
+        <SelectList
+          setSelected={(val) => handleChange("postTo", val)}
+          style={styles.innerInfo}
+          data={postTo}
+          save="value"
+        />
+        <TextInput
+          placeholder="Extra Information"
+          multiline
+          style={styles.innerInfoExtra}
+          onChangeText={(val) => handleChange("extraInfo", val)}
+        />
+
+        <TouchableOpacity
+          style={styles.contentContainerPost}
+          onPress={handleSubmit}
+        >
+          <Image source={postIcon} style={styles.postButtonIcon} />
+        </TouchableOpacity>
+      </ScrollView>
 
       <Nav />
     </SafeAreaView>
@@ -139,87 +235,88 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
+    marginTop: 60,
     flex: 1,
+    marginHorizontal: 10,
   },
   contentContainerPost: {
-    flexDirection: "row",
-
-    justifyContent: "center",
-    alignItems: "center",
+    alignSelf: "center",
   },
   postButtonIcon: {
-    marginLeft: "auto",
-    marginRight: 25,
-    marginTop: 15,
+    marginTop: 25,
     width: 50,
     height: 50,
   },
   title: {
     fontSize: 25,
-
     textAlign: "center",
-
     paddingBottom: 25,
   },
-
-  postContainer: {
-    flexDirection: "column",
-    zIndex: 0,
-    height: 400,
-    margin: 4,
-    borderRadius: 30,
-    shadowColor: "#000",
-    shadowOpacity: 0.6,
-    shadowRadius: 5,
-    elevation: 2,
-    marginHorizontal: 20,
+  sizeCon: {
+    flexDirection: "row",
   },
-  imageContainer: {
-    flex: 4,
-    position: "relative",
-    zIndex: 1,
-    width: "auto",
+
+  imageCon: {
+    padding: 20,
+    borderRadius: 15,
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   image: {
-    flex: 1,
-
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-
-    overflow: "hidden",
-
-    marginBottom: -23,
-  },
-  postInnerContainer: {
-    backgroundColor: "lightgrey",
-    flex: 2,
-    flexDirection: "column",
-    position: "relative",
-    zIndex: 2,
-    borderTopLeftRadius: 30,
-    borderBottomLeftRadius: 30,
-    borderTopRightRadius: 30,
-    borderBottomRightRadius: 30,
-  },
-  innerTitle: {
-    fontSize: 25,
-    paddingTop: 15,
-    paddingLeft: 15,
-  },
-  postInnerInfoContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-
-    marginTop: 20,
+    height: 220,
+    borderRadius: 15,
+    marginVertical: 15,
+    width: 220,
   },
   innerInfo: {
     fontSize: 15,
     paddingLeft: 15,
+    borderWidth: 1,
+    padding: 12,
+    borderColor: "grey",
+    marginBottom: 10,
+    borderRadius: 10,
   },
-  extraInfo: {
-    marginTop: 20,
+  innerInfoExtra: {
     fontSize: 15,
     paddingLeft: 15,
+
+    borderWidth: 1,
+    padding: 12,
+    borderColor: "grey",
+    marginVertical: 10,
+    borderRadius: 10,
+    maxHeight: 160,
+  },
+  expiryInfo: {
+    flex: 1,
+    fontSize: 15,
+
+    fontSize: 25,
+    textAlign: "center",
+    alignSelf: "center",
+    padding: 10,
+    backgroundColor: "white",
+    borderRadius: 10,
+    flex: 7,
+  },
+  dateTimeCon: { flex: 7, backgroundColor: "white", marginVertical: 10 },
+  date: {
+    alignSelf: "flex-start",
+    marginLeft: -5,
+    margin: 12,
+    // marginRight: 50,
+  },
+  innerInfoSize: {
+    fontSize: 15,
+    paddingLeft: 15,
+    borderWidth: 1,
+    padding: 10,
+    borderColor: "grey",
+    marginRight: 10,
+    borderRadius: 10,
+    flex: 1,
   },
 });
 
