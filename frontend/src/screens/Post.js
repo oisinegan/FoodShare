@@ -23,10 +23,12 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { format } from "date-fns";
 import { SelectList } from "react-native-dropdown-select-list";
 import * as ImagePicker from "expo-image-picker";
+import * as Location from "expo-location";
 import uuid from "react-native-uuid";
 
 function Post({ navigation }) {
   const [user, setUser] = useContext(Context);
+  const [location, setLocation] = useState(null);
   console.log(user);
   const [info, setInfo] = useState({
     userId: user.id,
@@ -42,6 +44,12 @@ function Post({ navigation }) {
   };
 
   const handleSubmit = async () => {
+    let long = location.coords.longitude;
+    let lat = location.coords.latitude;
+    //Trim to 6 decimal points
+    long = long.toFixed(6);
+    lat = lat.toFixed(6);
+    
     if (
       !info.foodName ||
       !info.brand ||
@@ -57,6 +65,11 @@ function Post({ navigation }) {
       return;
     }
 
+    if (!long || !lat) {
+      Alert.alert("Location error!", "Could not find location! Try again!");
+      return;
+    }
+
     try {
       const data = new FormData();
       data.append("image", image);
@@ -66,19 +79,23 @@ function Post({ navigation }) {
         data.append(key, info[key]);
       });
 
+      //Add loc to data
+      data.append("long", long);
+      data.append("lat", lat);
+
       console.log(data);
 
-      const response = await fetch("http://192.168.1.8:8000/PostAd", {
-        method: "post",
-        body: data,
-      });
+        const response = await fetch("http://192.168.1.8:8000/PostAd", {
+          method: "post",
+          body: data,
+        });
 
-      const result = await response.json();
-      console.log("t");
-      if (result) {
-      } else {
-        Alert.alert("ERROR", "ERR");
-      }
+        const result = await response.json();
+        console.log("t");
+        if (result) {
+        } else {
+          Alert.alert("ERROR", "ERR");
+        }
     } catch (e) {
       console.log("FETCH ERROR: " + e);
       Alert.alert("ERROR", "ERROR");
@@ -112,28 +129,30 @@ function Post({ navigation }) {
     }
   }
 
+  useEffect(() => {
+    getUserLoc();
+  }, []);
+
+  const getUserLoc = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permission to access location was denied");
+      return;
+    }
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation(location);
+    console.log(location);
+  };
+
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState("date");
-  const [show, setShow] = useState(false);
-
-  const [selectedUnit, setSelectedUnit] = React.useState("");
-  const [selectedPostTo, setSelectedPostTo] = React.useState("");
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
-    setShow(false);
+
     const formattedDate = format(date, "dd-MM-yyyy");
     info.expiryDate = formattedDate;
     setDate(currentDate);
-  };
-
-  const showMode = (currentMode) => {
-    setShow(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode("date");
   };
 
   const units = [

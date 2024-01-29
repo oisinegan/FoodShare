@@ -29,38 +29,69 @@ function Landing({ navigation }) {
   const [errorMsg, setErrorMsg] = useState(null);
 
   /*
-  - use user context for long and lat in profile page
-  - On proilfe user context shows long and lat nothing else. Check line 46 - 50 landing.ks
+    ON initial render locatoin is null: wait for location before calculating distance
   */
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
+  const [distance, setDistance] = useState(null);
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-      console.log("BEFOREW: Add loc to user");
-      console.log(user);
-      const long = location.coords.longitude;
-      const lat = location.coords.latitude;
-      const addLocToUser = { ...user, long, lat };
-      console.log("Add loc to user");
-      console.log(addLocToUser);
+  function calculateDistance(adLat, adLon) {
+    //Formual from :
+    //https://www.geeksforgeeks.org/haversine-formula-to-find-distance-between-two-points-on-a-sphere/
 
-      setUser(addLocToUser);
-      console.log(user);
-    })();
-  }, []);
+    // distance between latitude and longitudes
+    let userLat = location.coords.latitude;
+    let userLong = location.coords.longitude;
+
+    if (userLong < 0) {
+      console.log("userLong B: " + userLong);
+      userLong = userLong * -1;
+      console.log("userLong A: " + userLong);
+    }
+
+    if (adLon < 0) {
+      console.log("adLon B: " + adLon);
+      adLon = adLon * -1;
+      console.log("adLon A: " + adLon);
+    }
+
+    let dLat = ((adLat - userLat) * Math.PI) / 180.0;
+    let dLon = ((adLon - userLong) * Math.PI) / 180.0;
+
+    // convert to radiansa
+    userLat = (userLat * Math.PI) / 180.0;
+    adLat = (adLat * Math.PI) / 180.0;
+
+    // apply formulae
+    let a =
+      Math.pow(Math.sin(dLat / 2), 2) +
+      Math.pow(Math.sin(dLon / 2), 2) * Math.cos(userLat) * Math.cos(adLat);
+    let rad = 6371;
+    let c = 2 * Math.asin(Math.sqrt(a));
+    let ans = rad * c;
+    if (ans < 2) {
+      return 2;
+    } else {
+      return Math.round(ans);
+    }
+  }
 
   const [items, setItems] = useState([]);
-
+  console.log(user);
   useEffect(() => {
     fetchAllItems();
+    getUserLoc();
   }, []);
+
+  const getUserLoc = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permission to access location was denied");
+      return;
+    }
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation(location);
+    console.log(location);
+  };
 
   const fetchAllItems = async () => {
     try {
@@ -119,6 +150,9 @@ function Landing({ navigation }) {
             </View>
             <View style={styles.postInnerContainer}>
               <Text style={styles.innerTitle}>{item.item}</Text>
+              <Text style={styles.innerDistance}>
+                {calculateDistance(item.lat, item.long)}km away
+              </Text>
               <View style={styles.postInnerInfoContainer}>
                 <Text style={styles.innerInfo}>{item.brand}</Text>
                 <Text style={styles.innerInfo}>.</Text>
@@ -179,9 +213,9 @@ const styles = StyleSheet.create({
   postContainer: {
     flexDirection: "column",
     zIndex: 0,
-    height: 400,
+    height: 450,
     margin: 4,
-
+    marginBottom: 40,
     borderRadius: 30,
     shadowColor: "#000",
     shadowOpacity: 0.6,
@@ -221,6 +255,13 @@ const styles = StyleSheet.create({
     fontSize: 25,
     paddingTop: 15,
     paddingLeft: 15,
+    fontWeight: "400",
+  },
+  innerDistance: {
+    fontSize: 16,
+    paddingTop: 7.5,
+    fontWeight: "bold",
+    paddingLeft: 15,
   },
   postInnerInfoContainer: {
     flexDirection: "row",
@@ -228,13 +269,13 @@ const styles = StyleSheet.create({
 
     width: "100%",
     paddingHorizontal: 20,
-    marginTop: 20,
+    marginTop: 10,
   },
   innerInfo: {
     fontSize: 15,
   },
   extraInfo: {
-    marginTop: 20,
+    marginTop: 10,
     fontSize: 15,
     paddingLeft: 15,
   },

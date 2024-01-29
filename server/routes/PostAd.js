@@ -45,9 +45,6 @@ router.post("/", memoryStorage.single("image"), (req, res) => {
     ":" +
     new_date.getSeconds();
 
-  const info = req.body;
-  console.log(info);
-
   try {
     console.log(req.file);
     console.log(req.body);
@@ -71,7 +68,7 @@ router.post("/", memoryStorage.single("image"), (req, res) => {
 
       try {
         const sql =
-          "INSERT INTO ads (`item`, `image_url`, `brand`, `userId`, `expiryDate`,`size`, `measurementType`,`quant`, `extraInfo`,`datePosted`, `timePosted`,`postTo`) VALUES ('" +
+          "INSERT INTO ads (`item`, `image_url`, `brand`, `userId`, `expiryDate`,`size`, `measurementType`,`quant`, `extraInfo`,`datePosted`, `timePosted`,`postTo`, `long`,`lat`) VALUES ('" +
           info.foodName +
           "', '" +
           publicUrl +
@@ -95,6 +92,10 @@ router.post("/", memoryStorage.single("image"), (req, res) => {
           timePosted +
           "', '" +
           info.postTo +
+          "', '" +
+          info.long +
+          "', '" +
+          info.lat +
           "')";
         connection.query(sql, (err, rows, fields) => {
           if (err) throw err;

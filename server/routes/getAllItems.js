@@ -26,6 +26,8 @@ router.get("/", (req, res) => {
           datePosted,
           timePosted,
           postTo,
+          long,
+          lat,
         } = row;
         ads.push({
           id,
@@ -41,6 +43,8 @@ router.get("/", (req, res) => {
           datePosted,
           timePosted,
           postTo,
+          long,
+          lat,
         });
       });
       console.log(ads);
