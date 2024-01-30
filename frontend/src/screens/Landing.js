@@ -20,16 +20,61 @@ import { Context } from "../../App";
 import Nav from "../components/Nav";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import redIcon from "../images/redIcon.png";
+import whiteicon from "../images/whiteicon.png";
 import * as Location from "expo-location";
 import { add } from "date-fns";
 
 function Landing({ navigation }) {
   const [user, setUser] = useContext(Context);
+  const [isPressed, setIsPressed] = useState([]);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
+  const handleButtonPress = (item) => {
+    if (isPressed.includes(item.id)) {
+      console.log(isPressed);
+      setIsPressed(isPressed.filter((val) => val !== item.id));
+      console.log(isPressed);
+
+      //Create method to unregisterInterest
+      // - -- - - - - -- - -- -
+    } else {
+      setIsPressed([...isPressed, item.id]);
+      registerInterest(item);
+    }
+  };
+
+  const registerInterest = async (item) => {
+    try {
+      const response = await fetch("http://192.168.1.8:8000/registerInterest", {
+        method: "post",
+        body: JSON.stringify({
+          adId: item.id,
+          author: item.userId,
+          userInterested: user.id,
+        }),
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+      if (result) {
+        Alert.alert("Interest sent!");
+      } else {
+        Alert.alert("ERROR", "ERR");
+      }
+    } catch (e) {
+      console.log("GET ERROR: " + e);
+      Alert.alert("ERROR", "ERROR");
+    }
+  };
+
   /*
+  *
     ON initial render locatoin is null: wait for location before calculating distance
+    *
   */
 
   const [distance, setDistance] = useState(null);
@@ -105,7 +150,13 @@ function Landing({ navigation }) {
         const filteredRes = result.filter(
           (item) => Object.keys(item).length !== 0
         );
-        setItems(filteredRes);
+
+        /******** UPDATE FETCH TO NOT SEND USERS OWN ADS **************/
+        const removeUserAds = filteredRes.filter(
+          (item) => item.userId !== user.id
+        );
+
+        setItems(removeUserAds);
       } else {
         Alert.alert("ERROR", "ERR");
       }
@@ -163,9 +214,15 @@ function Landing({ navigation }) {
                 <Text style={styles.innerInfo}>Expiry: {item.expiryDate}</Text>
               </View>
               <Text style={styles.extraInfo}>{item.extraInfo}</Text>
-              <View style={styles.postLikeButton}>
-                <Image source={redIcon} style={styles.postLikeButtonIcon} />
-              </View>
+              <TouchableOpacity
+                style={[
+                  styles.postLikeButton,
+                  isPressed.includes(item.id) && styles.buttonPressed,
+                ]}
+                onPress={() => handleButtonPress(item)}
+              >
+                <Image source={whiteicon} style={styles.postLikeButtonIcon} />
+              </TouchableOpacity>
             </View>
           </View>
         ))}
@@ -281,19 +338,27 @@ const styles = StyleSheet.create({
   },
   postLikeButton: {
     borderRadius: 100,
-    backgroundColor: "white",
+    backgroundColor: "red",
+    borderWidth: 3,
+    borderColor: "white",
     marginRight: 20,
-    width: 60,
-    height: 60,
+    width: 65,
+    height: 65,
     alignSelf: "flex-end",
     position: "absolute",
-    bottom: -25,
+    bottom: -28,
     right: 15,
     marginLeft: -5,
   },
+  buttonPressed: {
+    backgroundColor: "green",
+  },
   postLikeButtonIcon: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
+    marginLeft: 4,
+    marginTop: 4,
+    borderRadius: 100,
   },
 });
 

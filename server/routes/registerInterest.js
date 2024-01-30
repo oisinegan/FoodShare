@@ -37,14 +37,12 @@ router.post("/", (req, res) => {
         console.log("EXISTS");
       } else {
         const sql =
-          "INSERT INTO applicants(adId, author, userInterested,userName) VALUES ('" +
+          "INSERT INTO applicants(adId, author, userInterested) VALUES ('" +
           info.adId +
           "','" +
           info.author +
           "','" +
           info.userInterested +
-          "','" +
-          info.userName +
           "');";
 
         connection.query(sql, (err, rows, fields) => {

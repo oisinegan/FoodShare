@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   View,
   Button,
+  ScrollView,
   Alert,
   TextInput,
   Image,
@@ -24,6 +25,39 @@ function Profile({ navigation }) {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [town, setTown] = useState(null);
+
+  const [items, setItems] = useState([]);
+  console.log(user);
+  useEffect(() => {
+    fetchAllItems();
+  }, []);
+
+  const fetchAllItems = async () => {
+    console.log("userid = " + user.id);
+    try {
+      const response = await fetch("http://192.168.1.8:8000/retrieveUserAds", {
+        method: "post",
+        body: JSON.stringify({ id: user.id }),
+      });
+
+      const result = await response.json();
+      if (result) {
+        //console.log(result);
+        const filteredRes = result.filter(
+          (item) => Object.keys(item).length !== 0
+        );
+
+        /******** UPDATE FETCH TO NOT SEND USERS OWN ADS **************/
+
+        setItems(removeUserAds);
+      } else {
+        Alert.alert("ERROR", "ERR");
+      }
+    } catch (e) {
+      console.log("GET ERROR: " + e);
+      Alert.alert("ERROR", "ERROR");
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -43,9 +77,7 @@ function Profile({ navigation }) {
     text = errorMsg;
   } else if (location) {
     text = JSON.stringify(location);
-    console.log(location.coords.longitude);
-    console.log(location.coords.latitude);
-    console.log(Location);
+
     getLocName(location);
   }
 
@@ -62,10 +94,8 @@ function Profile({ navigation }) {
       );
 
       const result = await response.json();
-      console.log(result);
-      if (result) {
-        console.log(result.address.town);
 
+      if (result) {
         if (result.address.town != null) {
           setTown(result.address.town);
         } else if (result.address.suburb != null) {
@@ -96,14 +126,47 @@ function Profile({ navigation }) {
         ) : (
           <Text>town</Text>
         )}
-        {user.long !== null && user.lat !== null ? (
-          <>
-            <Text>Long: {user.long}</Text>
-            <Text>Lat: {user.lat}</Text>
-          </>
-        ) : (
-          <Text>No Long or lat coords</Text>
-        )}
+        <ScrollView>
+          {items.map((item) => (
+            <View style={styles.postContainer}>
+              <View style={styles.imageContainer}>
+                <Image
+                  style={styles.image}
+                  source={{
+                    uri: item.image_url,
+                  }}
+                />
+              </View>
+              <View style={styles.postInnerContainer}>
+                <Text style={styles.innerTitle}>{item.item}</Text>
+                <Text style={styles.innerDistance}>
+                  {calculateDistance(item.lat, item.long)}km away
+                </Text>
+                <View style={styles.postInnerInfoContainer}>
+                  <Text style={styles.innerInfo}>{item.brand}</Text>
+                  <Text style={styles.innerInfo}>.</Text>
+                  <Text style={styles.innerInfo}>
+                    {item.size + " " + item.measurementType}{" "}
+                  </Text>
+                  <Text style={styles.innerInfo}>.</Text>
+                  <Text style={styles.innerInfo}>
+                    Expiry: {item.expiryDate}
+                  </Text>
+                </View>
+                <Text style={styles.extraInfo}>{item.extraInfo}</Text>
+                <TouchableOpacity
+                  style={[
+                    styles.postLikeButton,
+                    isPressed.includes(item.id) && styles.buttonPressed,
+                  ]}
+                  onPress={() => handleButtonPress(item)}
+                >
+                  <Image source={whiteicon} style={styles.postLikeButtonIcon} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
       </View>
       <Nav />
     </SafeAreaView>
