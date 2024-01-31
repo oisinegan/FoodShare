@@ -121,11 +121,13 @@ function Landing({ navigation }) {
   }
 
   const [items, setItems] = useState([]);
-  console.log(user);
+
   useEffect(() => {
-    fetchAllItems();
-    getUserLoc();
-  }, []);
+    if (user != null) {
+      fetchAllItems();
+      getUserLoc();
+    }
+  }, [user]);
 
   const getUserLoc = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -140,8 +142,13 @@ function Landing({ navigation }) {
 
   const fetchAllItems = async () => {
     try {
+      console.log("BEFORE FETCH" + user.id);
       const response = await fetch("http://192.168.1.8:8000/getAllItems", {
-        method: "get",
+        method: "post",
+        body: JSON.stringify(user),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       const result = await response.json();
@@ -152,11 +159,12 @@ function Landing({ navigation }) {
         );
 
         /******** UPDATE FETCH TO NOT SEND USERS OWN ADS **************/
-        const removeUserAds = filteredRes.filter(
-          (item) => item.userId !== user.id
-        );
+        console.log(user);
+        // const removeUserAds = filteredRes.filter(
+        //   (item) => item.userId !== user.id
+        // );
 
-        setItems(removeUserAds);
+        setItems(filteredRes);
       } else {
         Alert.alert("ERROR", "ERR");
       }

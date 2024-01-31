@@ -7,8 +7,9 @@ router.post("/", (req, res) => {
   console.log(info);
   connection.connect();
   console.log(info.id);
+
   connection.query(
-    "SELECT * FROM ads WHERE userId= " + info.id + ";",
+    "SELECT * FROM ads WHERE userId= " + info.user.id + ";",
 
     (err, rows, fields) => {
       if (err) throw err;
@@ -19,20 +20,34 @@ router.post("/", (req, res) => {
           item,
           image_url,
           brand,
-          category,
           userId,
-          userName,
-          dateTime,
+          expiryDate,
+          size,
+          measurementType,
+          quant,
+          extraInfo,
+          datePosted,
+          timePosted,
+          postTo,
+          long,
+          lat,
         } = row;
         ads.push({
           id,
           item,
           image_url,
           brand,
-          category,
           userId,
-          userName,
-          dateTime,
+          expiryDate,
+          size,
+          measurementType,
+          quant,
+          extraInfo,
+          datePosted,
+          timePosted,
+          postTo,
+          long,
+          lat,
         });
       });
       console.log("ADS");

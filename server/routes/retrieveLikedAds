@@ -3,16 +3,19 @@ const router = express.Router();
 const connection = require("../config/dbConfig");
 
 router.post("/", (req, res) => {
-  connection.connect();
   let info = req.body;
   console.log(info);
+  connection.connect();
+  console.log(info.id);
 
   connection.query(
-    "SELECT * FROM ads WHERE userId != " + info.id + ";",
+    "SELECT ads.* FROM ads INNER JOIN applicants ON ads.id = applicants.adId WHERE applicants.userInterested = " +
+      info.user.id +
+      ";",
 
     (err, rows, fields) => {
       if (err) throw err;
-      const ads = [{}];
+      const ads = [];
       rows.forEach((row) => {
         const {
           id,
@@ -49,6 +52,7 @@ router.post("/", (req, res) => {
           lat,
         });
       });
+      console.log("USER LIKED ADS");
       console.log(ads);
       res.send(ads);
     }
