@@ -11,6 +11,7 @@ import {
   TextInput,
   Image,
   Dimensions,
+  RefreshControl,
   ImageBackground,
   StatusBar,
   ScrollView,
@@ -29,6 +30,18 @@ function Landing({ navigation }) {
   const [isPressed, setIsPressed] = useState([]);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    console.log("CALLED REFRESH");
+    fetchAllItems();
+
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
 
   const handleButtonPress = (item) => {
     if (isPressed.includes(item.id)) {
@@ -67,7 +80,7 @@ function Landing({ navigation }) {
       }
     } catch (e) {
       console.log("GET ERROR: " + e);
-      Alert.alert("ERROR", "ERROR");
+      Alert.alert("ERROR", "ERROR - E");
     }
   };
 
@@ -170,7 +183,7 @@ function Landing({ navigation }) {
       }
     } catch (e) {
       console.log("GET ERROR: " + e);
-      Alert.alert("ERROR", "ERROR");
+      Alert.alert("ERROR", "ERROR FETCHING");
     }
   };
 
@@ -185,7 +198,12 @@ function Landing({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.contentContainer}>
+      <ScrollView
+        style={styles.contentContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {user === null ? (
           <Text style={styles.title}>Landing screen </Text>
         ) : (

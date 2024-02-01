@@ -69,6 +69,9 @@ app.use("/retrieveLikedAds", retrieveLikedAdsRouter);
 const registerInterestRouter = require("./routes/registerInterest");
 app.use("/registerInterest", registerInterestRouter);
 
+const unregisterInterestRouter = require("./routes/unregisterInterest");
+app.use("/unregisterInterest", unregisterInterestRouter);
+
 const getResponsesRouter = require("./routes/getResponses");
 app.use("/getResponses", getResponsesRouter);
 

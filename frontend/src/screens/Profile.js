@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   View,
   Button,
+  RefreshControl,
   ScrollView,
   Alert,
   TextInput,
@@ -21,6 +22,7 @@ import { Context } from "../../App";
 import Nav from "../components/Nav";
 import * as Location from "expo-location";
 import { TabView, SceneMap } from "react-native-tab-view";
+import whiteicon from "../images/whiteicon.png";
 
 function Profile({ navigation }) {
   const [user, setUser] = useContext(Context);
@@ -33,6 +35,7 @@ function Profile({ navigation }) {
   console.log(user);
   useEffect(() => {
     if (user != null) {
+      console.log("CALLED THIS USE EFFECT");
       fetchAllItems();
       fetchLikedItems();
     }
@@ -98,6 +101,19 @@ function Profile({ navigation }) {
     }
   };
 
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    console.log("CALLED REFRESH");
+    fetchAllItems();
+    fetchLikedItems();
+
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
+
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -156,7 +172,11 @@ function Profile({ navigation }) {
   const userAdsRoute = () => (
     <View>
       <Text style={styles.title}>Your posts</Text>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {items.map((item) => (
           <View style={styles.postContainer}>
             <View style={styles.imageContainer}>
@@ -188,13 +208,15 @@ function Profile({ navigation }) {
   );
 
   const activityRoute = () => (
-    <View style={{ flex: 1, backgroundColor: "#673ab7" }} />
+    <View style={{ flex: 1, backgroundColor: "#ffffff" }} />
   );
 
   const likesRoute = () => (
     <View>
       <Text style={styles.title}>Liked ads</Text>
-      <ScrollView>
+      <ScrollView style={styles.scrollCon}    refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
         {likedItems.map((item) => (
           <View style={styles.postContainer}>
             <View style={styles.imageContainer}>
@@ -218,6 +240,15 @@ function Profile({ navigation }) {
                 <Text style={styles.innerInfo}>Expiry: {item.expiryDate}</Text>
               </View>
               <Text style={styles.extraInfo}>{item.extraInfo}</Text>
+              <TouchableOpacity
+                style={[
+                  styles.postLikeButton,
+                  // isPressed.includes(item.id) && styles.buttonPressed,
+                ]}
+                onPress={() => unregisterInterest(item)}
+              >
+                <Image source={whiteicon} style={styles.postLikeButtonIcon} />
+              </TouchableOpacity>
             </View>
           </View>
         ))}
@@ -239,6 +270,35 @@ function Profile({ navigation }) {
     { key: "activity", title: "Activity" },
     { key: "likes", title: "Likes" },
   ]);
+
+  const unregisterInterest = async (item) => {
+    try {
+      const response = await fetch(
+        "http://192.168.1.8:8000/unregisterInterest",
+        {
+          method: "post",
+          body: JSON.stringify({
+            adId: item.id,
+            userId: user.id,
+          }),
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const result = await response.json();
+      if (result) {
+        Alert.alert("Interest undone!");
+      } else {
+        Alert.alert("ERROR", "ERR");
+      }
+    } catch (e) {
+      console.log("GET ERROR: " + e);
+      Alert.alert("ERROR", "ERROR");
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -263,6 +323,9 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
     flex: 1,
+  },
+  scrollCon: {
+    marginBottom: 70,
   },
   contentContainer: {
     flex: 1,
@@ -342,6 +405,30 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 15,
     paddingLeft: 15,
+  },
+  postLikeButton: {
+    borderRadius: 100,
+    backgroundColor: "green",
+    borderWidth: 3,
+    borderColor: "white",
+    marginRight: 20,
+    width: 65,
+    height: 65,
+    alignSelf: "flex-end",
+    position: "absolute",
+    bottom: -28,
+    right: 15,
+    marginLeft: -5,
+  },
+  buttonPressed: {
+    backgroundColor: "green",
+  },
+  postLikeButtonIcon: {
+    width: 50,
+    height: 50,
+    marginLeft: 4,
+    marginTop: 4,
+    borderRadius: 100,
   },
 });
 
