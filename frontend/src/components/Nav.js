@@ -67,13 +67,15 @@ function Nav() {
 
 const styles = StyleSheet.create({
   con: {
-    backgroundColor: "lightgrey",
+    backgroundColor: "white",
   },
   conInner: {
-    marginHorizontal: "10%",
+    paddingHorizontal: "10%",
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 20,
+    paddingTop: 15,
+    borderTopColor: "grey",
+    borderTopWidth: 2,
   },
   nav: {
     fontSize: 20,

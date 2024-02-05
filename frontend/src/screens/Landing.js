@@ -20,18 +20,198 @@ import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../../App";
 import Nav from "../components/Nav";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import redIcon from "../images/redIcon.png";
 import whiteicon from "../images/whiteicon.png";
+import pin from "../images/pin.png";
 import * as Location from "expo-location";
-import { add } from "date-fns";
+
+import MapView, { Marker, Callout } from "react-native-maps";
 
 function Landing({ navigation }) {
   const [user, setUser] = useContext(Context);
   const [isPressed, setIsPressed] = useState([]);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-
   const [refreshing, setRefreshing] = React.useState(false);
+
+  const [currView, setCurrView] = useState(0);
+
+  const mapView = () => {
+    return (
+      <View style={styles.contentContainer}>
+        {user === null ? (
+          <Text style={styles.title}>Landing screen </Text>
+        ) : (
+          <>
+            <Text style={styles.title}>Landing screen {user.name}</Text>
+            <View style={styles.controls}>
+              <TouchableOpacity style={styles.logoutCon} onPress={logout}>
+                <Text style={styles.logout}>Logout</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.changeViewButton}
+                onPress={() => setCurrView(0)}
+              >
+                <Text style={styles.logout}>List View</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+        <View style={styles.contentContainer}>
+          {location && items ? (
+            <MapView
+              style={{ flex: 1 }}
+              initialRegion={{
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                latitudeDelta: 0.2922,
+                longitudeDelta: 0.2421,
+              }}
+              provider={MapView.PROVIDER_GOOGLE}
+            >
+              {items.map((item, index) => (
+                <Marker
+                  key={index}
+                  coordinate={{
+                    latitude: item.lat,
+                    longitude: item.long,
+                  }}
+                >
+                  <Callout>
+                    <View style={styles.map_postContainer}>
+                      <View style={styles.map_imageContainer}>
+                        <Image
+                          style={styles.map_image}
+                          source={{
+                            uri: item.image_url,
+                          }}
+                        />
+                      </View>
+                      <View style={styles.map_postInnerContainer}>
+                        <Text style={styles.map_innerTitle}>{item.item}</Text>
+                        <Text style={styles.map_innerDistance}>
+                          {calculateDistance(item.lat, item.long)}km away
+                        </Text>
+
+                        <Text style={styles.map_innerInfo}>{item.brand}</Text>
+
+                        <Text style={styles.map_innerInfo}>
+                          {item.size + " " + item.measurementType}{" "}
+                        </Text>
+
+                        <Text style={styles.map_innerInfo}>
+                          Expiry: {item.expiryDate}
+                        </Text>
+
+                        <Text style={styles.map_extraInfo}>
+                          {item.extraInfo}
+                        </Text>
+                        <TouchableOpacity
+                          style={[
+                            styles.map_postLikeButton,
+                            isPressed.includes(item.id) && styles.buttonPressed,
+                          ]}
+                          onPress={() => handleButtonPress(item)}
+                        >
+                          <Image
+                            source={whiteicon}
+                            style={styles.map_postLikeButtonIcon}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </Callout>
+                </Marker>
+              ))}
+              <Marker
+                coordinate={{
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                }}
+              />
+            </MapView>
+          ) : (
+            <Text>Loc not ready</Text>
+          )}
+        </View>
+      </View>
+    );
+  };
+
+  const listView = () => {
+    return (
+      <ScrollView
+        style={styles.contentContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {user === null ? (
+          <Text style={styles.title}>Landing screen </Text>
+        ) : (
+          <>
+            <Text style={styles.title}>Landing screen {user.name}</Text>
+            <View style={styles.controls}>
+              <TouchableOpacity style={styles.logoutCon} onPress={logout}>
+                <Text style={styles.logout}>Logout</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.changeViewButton}
+                onPress={() => setCurrView(1)}
+              >
+                <Text style={styles.logout}>Map View</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+
+        {items.map((item) => (
+          <View style={styles.postContainer}>
+            <View style={styles.imageContainer}>
+              <Image
+                style={styles.image}
+                source={{
+                  uri: item.image_url,
+                }}
+              />
+            </View>
+            <View style={styles.postInnerContainer}>
+              <Text style={styles.innerTitle}>{item.item}</Text>
+              <Text style={styles.innerDistance}>
+                {calculateDistance(item.lat, item.long)}km away
+              </Text>
+              <View style={styles.postInnerInfoContainer}>
+                <Text style={styles.innerInfo}>{item.brand}</Text>
+                <Text style={styles.innerInfo}>.</Text>
+                <Text style={styles.innerInfo}>
+                  {item.size + " " + item.measurementType}{" "}
+                </Text>
+                <Text style={styles.innerInfo}>.</Text>
+                <Text style={styles.innerInfo}>Expiry: {item.expiryDate}</Text>
+              </View>
+              <Text style={styles.extraInfo}>{item.extraInfo}</Text>
+              <TouchableOpacity
+                style={[
+                  styles.postLikeButton,
+                  isPressed.includes(item.id) && styles.buttonPressed,
+                ]}
+                onPress={() => handleButtonPress(item)}
+              >
+                <Image source={whiteicon} style={styles.postLikeButtonIcon} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+    );
+  };
+
+  const controlView = () => {
+    if (currView === 0) {
+      return listView;
+    } else {
+      return mapView;
+    }
+  };
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -198,62 +378,7 @@ function Landing({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView
-        style={styles.contentContainer}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {user === null ? (
-          <Text style={styles.title}>Landing screen </Text>
-        ) : (
-          <>
-            <Text style={styles.title}>Landing screen {user.name}</Text>
-            <TouchableOpacity style={styles.logoutCon} onPress={logout}>
-              <Text style={styles.logout}>Logout</Text>
-            </TouchableOpacity>
-          </>
-        )}
-
-        {items.map((item) => (
-          <View style={styles.postContainer}>
-            <View style={styles.imageContainer}>
-              <Image
-                style={styles.image}
-                source={{
-                  uri: item.image_url,
-                }}
-              />
-            </View>
-            <View style={styles.postInnerContainer}>
-              <Text style={styles.innerTitle}>{item.item}</Text>
-              <Text style={styles.innerDistance}>
-                {calculateDistance(item.lat, item.long)}km away
-              </Text>
-              <View style={styles.postInnerInfoContainer}>
-                <Text style={styles.innerInfo}>{item.brand}</Text>
-                <Text style={styles.innerInfo}>.</Text>
-                <Text style={styles.innerInfo}>
-                  {item.size + " " + item.measurementType}{" "}
-                </Text>
-                <Text style={styles.innerInfo}>.</Text>
-                <Text style={styles.innerInfo}>Expiry: {item.expiryDate}</Text>
-              </View>
-              <Text style={styles.extraInfo}>{item.extraInfo}</Text>
-              <TouchableOpacity
-                style={[
-                  styles.postLikeButton,
-                  isPressed.includes(item.id) && styles.buttonPressed,
-                ]}
-                onPress={() => handleButtonPress(item)}
-              >
-                <Image source={whiteicon} style={styles.postLikeButtonIcon} />
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
-
+      {controlView()()}
       <Nav />
     </SafeAreaView>
   );
@@ -293,6 +418,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
 
+  changeViewButton: {
+    backgroundColor: "lightblue",
+    marginVertical: 10,
+    padding: 10,
+
+    borderRadius: 15,
+  },
+
+  controls: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+  },
+
+  //LIST VIEW
   postContainer: {
     flexDirection: "column",
     zIndex: 0,
@@ -314,18 +454,14 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-
     overflow: "hidden",
-
     marginBottom: -23,
   },
   postInnerContainer: {
     backgroundColor: "lightgrey",
     flex: 2,
-
     flexDirection: "column",
     position: "relative",
     zIndex: 2,
@@ -385,6 +521,67 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     marginTop: 4,
     borderRadius: 100,
+  },
+
+  //Map VIEW
+  map_postContainer: {
+    flexDirection: "row",
+    height: "auto",
+    overflow: "visible",
+  },
+  map_imageContainer: {
+    width: 125,
+    paddingRight: 5,
+  },
+  map_image: {
+    flex: 1,
+    height: "100%",
+    borderRadius: 20,
+  },
+  map_postInnerContainer: {
+    backgroundColor: "white",
+    flex: 1,
+    flexDirection: "column",
+  },
+  map_innerTitle: {
+    fontSize: 25,
+    paddingTop: 15,
+    paddingLeft: 15,
+    fontWeight: "400",
+  },
+  map_innerDistance: {
+    fontSize: 16,
+    paddingTop: 7.5,
+    fontWeight: "bold",
+    paddingLeft: 15,
+  },
+
+  map_innerInfo: {
+    fontSize: 15,
+    marginTop: 5,
+    paddingLeft: 15,
+  },
+  map_extraInfo: {
+    marginTop: 10,
+    fontSize: 15,
+    paddingLeft: 15,
+  },
+  map_postLikeButton: {
+    borderRadius: 40,
+    backgroundColor: "red",
+    justifyContent: "center",
+    alignContent: "center",
+    marginTop: 15,
+    width: 50,
+    height: 50,
+    alignSelf: "flex-end",
+  },
+  map_buttonPressed: {
+    backgroundColor: "green",
+  },
+  map_postLikeButtonIcon: {
+    width: 50,
+    height: 50,
   },
 });
 
