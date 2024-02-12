@@ -215,7 +215,7 @@ function Landing({ navigation }) {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    console.log("CALLED REFRESH");
+    ("CALLED REFRESH");
     fetchAllItems();
 
     setTimeout(() => {
@@ -225,9 +225,9 @@ function Landing({ navigation }) {
 
   const handleButtonPress = (item) => {
     if (isPressed.includes(item.id)) {
-      console.log(isPressed);
+      isPressed;
       setIsPressed(isPressed.filter((val) => val !== item.id));
-      console.log(isPressed);
+      isPressed;
 
       //Create method to unregisterInterest
       // - -- - - - - -- - -- -
@@ -238,6 +238,7 @@ function Landing({ navigation }) {
   };
 
   const registerInterest = async (item) => {
+    console.log(process.env.IP_ADDRESS + "/registerInterest");
     try {
       const response = await fetch("http://192.168.1.8:8000/registerInterest", {
         method: "post",
@@ -259,7 +260,7 @@ function Landing({ navigation }) {
         Alert.alert("ERROR", "ERR");
       }
     } catch (e) {
-      console.log("GET ERROR: " + e);
+      "GET ERROR: " + e;
       Alert.alert("ERROR", "ERROR - E");
     }
   };
@@ -281,15 +282,15 @@ function Landing({ navigation }) {
     let userLong = location.coords.longitude;
 
     if (userLong < 0) {
-      console.log("userLong B: " + userLong);
+      "userLong B: " + userLong;
       userLong = userLong * -1;
-      console.log("userLong A: " + userLong);
+      "userLong A: " + userLong;
     }
 
     if (adLon < 0) {
-      console.log("adLon B: " + adLon);
+      "adLon B: " + adLon;
       adLon = adLon * -1;
-      console.log("adLon A: " + adLon);
+      "adLon A: " + adLon;
     }
 
     let dLat = ((adLat - userLat) * Math.PI) / 180.0;
@@ -330,12 +331,12 @@ function Landing({ navigation }) {
     }
     let location = await Location.getCurrentPositionAsync({});
     setLocation(location);
-    console.log(location);
+    location;
   };
 
   const fetchAllItems = async () => {
     try {
-      console.log("BEFORE FETCH" + user.id);
+      "BEFORE FETCH" + user.id;
       const response = await fetch("http://192.168.1.8:8000/getAllItems", {
         method: "post",
         body: JSON.stringify(user),
@@ -346,13 +347,13 @@ function Landing({ navigation }) {
 
       const result = await response.json();
       if (result) {
-        //console.log(result);
+        //(result);
         const filteredRes = result.filter(
           (item) => Object.keys(item).length !== 0
         );
 
         /******** UPDATE FETCH TO NOT SEND USERS OWN ADS **************/
-        console.log(user);
+        user;
         // const removeUserAds = filteredRes.filter(
         //   (item) => item.userId !== user.id
         // );
@@ -372,7 +373,7 @@ function Landing({ navigation }) {
       await AsyncStorage.removeItem("token");
       setUser(null);
     } catch (e) {
-      console.log(e);
+      e;
     }
   };
 

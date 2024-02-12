@@ -23,29 +23,58 @@ import Nav from "../components/Nav";
 import * as Location from "expo-location";
 import { TabView, SceneMap } from "react-native-tab-view";
 import whiteicon from "../images/whiteicon.png";
-
+import { useNavigation } from "@react-navigation/native";
+import users from "../images/users.png";
+import editProfile from "../images/editProfile.png";
+import posts from "../images/posts.png";
 function Profile({ navigation }) {
   const [user, setUser] = useContext(Context);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [town, setTown] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
 
   const [items, setItems] = useState([]);
   const [likedItems, setLikedItems] = useState([]);
-  console.log(user);
+
   useEffect(() => {
     if (user != null) {
-      console.log("CALLED THIS USE EFFECT");
+      getUserInfo();
       fetchAllItems();
       fetchLikedItems();
     }
   }, [user]);
+  const getUserInfo = async () => {
+    try {
+      const response = await fetch("http://192.168.1.8:8000/getUserInfo", {
+        method: "post",
+        body: JSON.stringify({ user }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+      if (result) {
+        //(result);
+        // const filteredRes = result.filter(
+        //   (item) => Object.keys(item).length !== 0
+        // );
+
+        /******** UPDATE FETCH TO NOT SEND USERS OWN ADS **************/
+
+        setUserInfo(result);
+        console.log(result);
+      } else {
+        Alert.alert("ERROR", "ERR");
+      }
+    } catch (e) {
+      Alert.alert("ERROR", e);
+    }
+  };
 
   const fetchAllItems = async () => {
-    console.log("userid = " + user.id);
     try {
-      console.log("userid = " + user.id);
-
       const response = await fetch("http://192.168.1.8:8000/retrieveUserAds", {
         method: "post",
         body: JSON.stringify({ user }),
@@ -56,7 +85,7 @@ function Profile({ navigation }) {
 
       const result = await response.json();
       if (result) {
-        //console.log(result);
+        //(result);
         // const filteredRes = result.filter(
         //   (item) => Object.keys(item).length !== 0
         // );
@@ -65,20 +94,20 @@ function Profile({ navigation }) {
 
         setItems(result);
       } else {
-        console.log("No Result");
+        ("No Result");
         Alert.alert("ERROR", "ERR");
       }
     } catch (e) {
-      console.log("GET ERROR: " + e);
+      "GET ERROR: " + e;
       Alert.alert("ERROR", "ERROR");
     }
   };
 
   const fetchLikedItems = async () => {
-    console.log("userid = " + user.id);
+    "userid = " + user.id;
     try {
-      console.log("userid = " + user.id);
-      console.log("CALLING LIKED ADS");
+      "userid = " + user.id;
+      ("CALLING LIKED ADS");
       const response = await fetch("http://192.168.1.8:8000/retrieveLikedAds", {
         method: "post",
         body: JSON.stringify({ user }),
@@ -90,13 +119,13 @@ function Profile({ navigation }) {
       const result = await response.json();
       if (result) {
         setLikedItems(result);
-        console.log(result);
+        result;
       } else {
-        console.log("No Result");
+        ("No Result");
         Alert.alert("ERROR", "ERR");
       }
     } catch (e) {
-      console.log("GET ERROR: " + e);
+      "GET ERROR: " + e;
       Alert.alert("ERROR", "ERROR");
     }
   };
@@ -105,7 +134,7 @@ function Profile({ navigation }) {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    console.log("CALLED REFRESH");
+    ("CALLED REFRESH");
     fetchAllItems();
     fetchLikedItems();
 
@@ -164,156 +193,59 @@ function Profile({ navigation }) {
         Alert.alert("ERROR", "ERR");
       }
     } catch (e) {
-      console.log("GET ERROR: " + e);
+      "GET ERROR: " + e;
       Alert.alert("ERROR", "ERROR");
     }
   }
 
-  const userAdsRoute = () => (
-    <View>
-      <Text style={styles.title}>Your posts</Text>
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {items.map((item) => (
-          <View style={styles.postContainer}>
-            <View style={styles.imageContainer}>
-              <Image
-                style={styles.image}
-                source={{
-                  uri: item.image_url,
-                }}
-              />
-            </View>
-            <View style={styles.postInnerContainer}>
-              <Text style={styles.innerTitle}>{item.item}</Text>
-
-              <View style={styles.postInnerInfoContainer}>
-                <Text style={styles.innerInfo}>{item.brand}</Text>
-                <Text style={styles.innerInfo}>.</Text>
-                <Text style={styles.innerInfo}>
-                  {item.size + " " + item.measurementType}{" "}
-                </Text>
-                <Text style={styles.innerInfo}>.</Text>
-                <Text style={styles.innerInfo}>Expiry: {item.expiryDate}</Text>
-              </View>
-              <Text style={styles.extraInfo}>{item.extraInfo}</Text>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
-    </View>
-  );
-
-  const activityRoute = () => (
-    <View style={{ flex: 1, backgroundColor: "#ffffff" }} />
-  );
-
-  const likesRoute = () => (
-    <View>
-      <Text style={styles.title}>Liked ads</Text>
-      <ScrollView style={styles.scrollCon}    refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }>
-        {likedItems.map((item) => (
-          <View style={styles.postContainer}>
-            <View style={styles.imageContainer}>
-              <Image
-                style={styles.image}
-                source={{
-                  uri: item.image_url,
-                }}
-              />
-            </View>
-            <View style={styles.postInnerContainer}>
-              <Text style={styles.innerTitle}>{item.item}</Text>
-
-              <View style={styles.postInnerInfoContainer}>
-                <Text style={styles.innerInfo}>{item.brand}</Text>
-                <Text style={styles.innerInfo}>.</Text>
-                <Text style={styles.innerInfo}>
-                  {item.size + " " + item.measurementType}{" "}
-                </Text>
-                <Text style={styles.innerInfo}>.</Text>
-                <Text style={styles.innerInfo}>Expiry: {item.expiryDate}</Text>
-              </View>
-              <Text style={styles.extraInfo}>{item.extraInfo}</Text>
-              <TouchableOpacity
-                style={[
-                  styles.postLikeButton,
-                  // isPressed.includes(item.id) && styles.buttonPressed,
-                ]}
-                onPress={() => unregisterInterest(item)}
-              >
-                <Image source={whiteicon} style={styles.postLikeButtonIcon} />
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
-    </View>
-  );
-
-  const renderScene = SceneMap({
-    userAds: userAdsRoute,
-    activity: activityRoute,
-    likes: likesRoute,
-  });
-
-  const layout = useWindowDimensions();
-
-  const [index, setIndex] = React.useState(0);
-  const [routes] = React.useState([
-    { key: "userAds", title: "Posts" },
-    { key: "activity", title: "Activity" },
-    { key: "likes", title: "Likes" },
-  ]);
-
-  const unregisterInterest = async (item) => {
-    try {
-      const response = await fetch(
-        "http://192.168.1.8:8000/unregisterInterest",
-        {
-          method: "post",
-          body: JSON.stringify({
-            adId: item.id,
-            userId: user.id,
-          }),
-
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const result = await response.json();
-      if (result) {
-        Alert.alert("Interest undone!");
-      } else {
-        Alert.alert("ERROR", "ERR");
-      }
-    } catch (e) {
-      console.log("GET ERROR: " + e);
-      Alert.alert("ERROR", "ERROR");
-    }
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.contentContainer}>
-        <Text style={styles.title}>
-          Profile screen {user.name} - {town}
-        </Text>
+      <ScrollView style={styles.contentContainer}>
+        <View style={styles.topNav}>
+          <TouchableOpacity
+            style={styles.viewPostsContainer}
+            onPress={() => navigation.navigate("ExtendedProfile")}
+          >
+            <Image source={posts} style={styles.viewPostsImage} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.editProfileContainer}
+            onPress={() =>
+              navigation.navigate("EditProfile", { img: userInfo[0].Url })
+            }
+          >
+            <Image source={editProfile} style={styles.editProfileImage} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.profileImageCont}>
+          <View style={styles.profileImageInnerCont}>
+            {userInfo ? (
+              <Image
+                source={{ uri: userInfo[0].Url }}
+                style={styles.profileImage}
+              />
+            ) : (
+              <Text>LOADING..</Text>
+            )}
+          </View>
+        </View>
 
-        <TabView
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={{ width: layout.width }}
-        />
-      </View>
+        <Text style={styles.title}>{user.name}</Text>
+        <Text style={styles.locInfo}>{town}</Text>
+        {userInfo ? (
+          <>
+            <Text style={styles.locInfo}>
+              Share Points: {userInfo[0].points}
+            </Text>
+          </>
+        ) : (
+          <Text>LOADING..</Text>
+        )}
+
+        <View style={styles.activity}>
+          <Text style={styles.title}>Activity</Text>
+        </View>
+      </ScrollView>
       <Nav />
     </SafeAreaView>
   );
@@ -327,108 +259,57 @@ const styles = StyleSheet.create({
   scrollCon: {
     marginBottom: 70,
   },
-  contentContainer: {
-    flex: 1,
-  },
+  contentContainer: {},
   title: {
-    fontSize: 25,
+    fontSize: 40,
+    marginTop: 10,
     textAlign: "center",
-    marginTop: 20,
-    paddingBottom: 25,
   },
-
-  postContainer: {
-    flexDirection: "column",
-    zIndex: 0,
-    height: 450,
-    margin: 4,
-    marginBottom: 40,
-    borderRadius: 30,
-    shadowColor: "#000",
-    shadowOpacity: 0.6,
-    shadowRadius: 5,
-    elevation: 2,
-    marginHorizontal: 20,
+  locInfo: {
+    fontSize: 30,
+    marginTop: 10,
+    textAlign: "center",
   },
-  imageContainer: {
-    flex: 4,
-    position: "relative",
-    zIndex: 1,
-    width: "auto",
-  },
-  image: {
-    flex: 1,
-
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-
-    overflow: "hidden",
-
-    marginBottom: -23,
-  },
-  postInnerContainer: {
-    backgroundColor: "lightgrey",
-    flex: 1.5,
-
-    flexDirection: "column",
-    position: "relative",
-    zIndex: 2,
-    borderTopLeftRadius: 30,
-    borderBottomLeftRadius: 30,
-    borderTopRightRadius: 30,
-    borderBottomRightRadius: 30,
-  },
-  innerTitle: {
-    fontSize: 25,
-    paddingTop: 15,
-    paddingLeft: 15,
-    fontWeight: "400",
-  },
-  innerDistance: {
-    fontSize: 16,
-    paddingTop: 7.5,
-    fontWeight: "bold",
-    paddingLeft: 15,
-  },
-  postInnerInfoContainer: {
+  topNav: {
     flexDirection: "row",
     justifyContent: "space-between",
-
-    width: "100%",
-    paddingHorizontal: 20,
-    marginTop: 10,
   },
-  innerInfo: {
-    fontSize: 15,
-  },
-  extraInfo: {
-    marginTop: 10,
-    fontSize: 15,
+  viewPostsContainer: {
+    justifyContent: "flex-start",
     paddingLeft: 15,
   },
-  postLikeButton: {
-    borderRadius: 100,
-    backgroundColor: "green",
-    borderWidth: 3,
-    borderColor: "white",
-    marginRight: 20,
-    width: 65,
-    height: 65,
-    alignSelf: "flex-end",
-    position: "absolute",
-    bottom: -28,
-    right: 15,
-    marginLeft: -5,
-  },
-  buttonPressed: {
-    backgroundColor: "green",
-  },
-  postLikeButtonIcon: {
+  viewPostsImage: {
     width: 50,
     height: 50,
-    marginLeft: 4,
-    marginTop: 4,
+  },
+  editProfileContainer: {
+    justifyContent: "flex-end",
+    paddingRight: 15,
+  },
+  editProfileImage: {
+    borderRadius: 50,
+    width: 50,
+    height: 50,
+  },
+  profileImageCont: {
+    flexDirection: "row",
+    justifyContent: "center",
+    paddingVertical: 10,
+  },
+  profileImageInnerCont: {
+    padding: 15,
     borderRadius: 100,
+  },
+  profileImage: {
+    height: 200,
+    width: 200,
+    borderRadius: 40,
+  },
+  activity: {
+    backgroundColor: "lightgrey",
+    flex: 1,
+    //Delete when adding content
+    paddingBottom: 400,
   },
 });
 

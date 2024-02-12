@@ -18,6 +18,7 @@ app.use(
       "http://192.168.1.8:19000",
       "http://localhost:3000",
       "https://localhost:3000",
+      "http://10.9.10.25:8081",
     ],
     credentials: true,
   })
@@ -74,6 +75,12 @@ app.use("/unregisterInterest", unregisterInterestRouter);
 
 const getResponsesRouter = require("./routes/getResponses");
 app.use("/getResponses", getResponsesRouter);
+
+const updateUserRouter = require("./routes/updateUser");
+app.use("/updateUser", updateUserRouter);
+
+const getUserInfoRouter = require("./routes/getUserInfo");
+app.use("/getUserInfo", getUserInfoRouter);
 
 app.listen(process.env.PORT, () => {
   console.log("Server started on server " + process.env.PORT);

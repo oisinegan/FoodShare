@@ -29,7 +29,7 @@ import uuid from "react-native-uuid";
 function Post({ navigation }) {
   const [user, setUser] = useContext(Context);
   const [location, setLocation] = useState(null);
-  console.log(user);
+
   const [info, setInfo] = useState({
     userId: user.id,
   });
@@ -40,7 +40,7 @@ function Post({ navigation }) {
       return { ...prev, [name]: val.trim() };
     });
 
-    // console.log(info);
+    // (info);
   };
 
   const handleSubmit = async () => {
@@ -49,7 +49,7 @@ function Post({ navigation }) {
     //Trim to 6 decimal points
     long = long.toFixed(6);
     lat = lat.toFixed(6);
-    
+
     if (
       !info.foodName ||
       !info.brand ||
@@ -83,21 +83,21 @@ function Post({ navigation }) {
       data.append("long", long);
       data.append("lat", lat);
 
-      console.log(data);
+      data;
 
-        const response = await fetch("http://192.168.1.8:8000/PostAd", {
-          method: "post",
-          body: data,
-        });
+      const response = await fetch("http://192.168.1.8:8000/PostAd", {
+        method: "post",
+        body: data,
+      });
 
-        const result = await response.json();
-        console.log("t");
-        if (result) {
-        } else {
-          Alert.alert("ERROR", "ERR");
-        }
+      const result = await response.json();
+
+      if (result) {
+      } else {
+        Alert.alert("ERROR", "ERR");
+      }
     } catch (e) {
-      console.log("FETCH ERROR: " + e);
+      "FETCH ERROR: " + e;
       Alert.alert("ERROR", "ERROR");
     }
   };
@@ -111,15 +111,15 @@ function Post({ navigation }) {
       quality: 1,
     });
 
-    // console.log(result.uri);
-    // console.log(result.assets[0].uri);
+    // (result.uri);
+    // (result.assets[0].uri);
 
     if (!result.canceled) {
       const timeStamp = Date.now();
       const uniqueCode = uuid.v4();
       const imgName = user.id + "_" + timeStamp + "_" + uniqueCode + ".jpeg";
 
-      console.log("IMAGE NAME: " + imgName);
+      "IMAGE NAME: " + imgName;
 
       setImage({
         uri: result.assets[0].uri,
@@ -141,7 +141,7 @@ function Post({ navigation }) {
     }
     let location = await Location.getCurrentPositionAsync({});
     setLocation(location);
-    console.log(location);
+    location;
   };
 
   const [date, setDate] = useState(new Date());

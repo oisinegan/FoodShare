@@ -6,22 +6,24 @@ router.post("/", (req, res) => {
   let info = req.body;
   console.log(info);
   connection.connect();
-  const users = [{}];
+  console.log(info.id);
 
   connection.query(
-    // "SELECT * FROM applicants WHERE adId= " + info.id + ";",
-    "SELECT User.email, User.name FROM applicants JOIN User ON applicants.userInterested = User.id WHERE applicants.adId = " +
-      info.id +
-      ";",
+    "SELECT * FROM User WHERE id= " + info.user.id + ";",
+
     (err, rows, fields) => {
       if (err) throw err;
-
+      const info = [];
       rows.forEach((row) => {
-        const { email, name } = row;
-        users.push({ email, name });
+        const { Url, points } = row;
+        info.push({
+          Url,
+          points,
+        });
       });
-
-      res.send(users);
+      console.log("info");
+      console.log(info);
+      res.send(info);
     }
   );
 });

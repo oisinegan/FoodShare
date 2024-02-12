@@ -29,12 +29,12 @@ function Login({ navigation }) {
     setInfo((prev) => {
       return { ...prev, [name]: val.trim() };
     });
-    console.log(info);
+    (info);
   };
 
   const handleSubmit = async () => {
     if (!info.username || !info.password) {
-      console.log(info);
+      (info);
       Alert.alert("ERROR", "Fill in all fields!");
       return;
     }
@@ -49,7 +49,7 @@ function Login({ navigation }) {
       });
 
       const result = await response.json();
-      console.log(result);
+      (result);
       if (result.user) {
         Alert.alert("WOEKS", "WORKS: " + result);
 
@@ -58,7 +58,7 @@ function Login({ navigation }) {
           const decoded = decodeToken(result.user);
           setUser(decoded);
         } catch (error) {
-          console.log("Error logging in: " + error);
+          ("Error logging in: " + error);
         }
 
         navigation.navigate("Landing");
@@ -66,7 +66,7 @@ function Login({ navigation }) {
         Alert.alert("ERROR", "Wrong user or pass");
       }
     } catch (e) {
-      console.log("FETCH ERROR: " + e);
+      ("FETCH ERROR: " + e);
       Alert.alert("ERROR", "ERROR");
     }
   };

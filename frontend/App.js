@@ -8,6 +8,10 @@ import Landing from "./src/screens/Landing";
 import Post from "./src/screens/Post";
 import Charity from "./src/screens/Charity";
 import Profile from "./src/screens/Profile";
+import AdInterest from "./src/screens/AdInterest";
+import EditProfile from "./src/screens/EditProfile";
+import ExtendedProfile from "./src/screens/ExtendedProfile";
+
 const Stack = createNativeStackNavigator();
 export const Context = React.createContext();
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -35,7 +39,7 @@ export default function App() {
       console.log("ERROR checking token: " + e);
     }
   };
-
+  //
   return (
     <NavigationContainer>
       <Context.Provider value={[user, setUser]}>
@@ -70,6 +74,21 @@ export default function App() {
             name="Profile"
             component={Profile}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="AdInterest"
+            component={AdInterest}
+            options={{ headerShown: true }}
+          />
+          <Stack.Screen
+            name="EditProfile"
+            component={EditProfile}
+            options={{ headerShown: true }}
+          />
+          <Stack.Screen
+            name="ExtendedProfile"
+            component={ExtendedProfile}
+            options={{ headerShown: true }}
           />
         </Stack.Navigator>
       </Context.Provider>

@@ -22,14 +22,60 @@ import MapView, { Marker, Callout } from "react-native-maps";
 import * as Location from "expo-location";
 import whiteicon from "../images/whiteicon.png";
 
-function Charity({ navigation }) {
+function AdInterest({ route, navigation }) {
   const [user, setUser] = useContext(Context);
+  const [interest, setInterest] = useState([]);
+  const { params } = route;
+  const ad = params;
   // const mapsKey = process.env.MAPS_KEY;
   // (process.env.MAPS_KEY);
 
+  useEffect(() => {
+    if (ad != null) {
+      fetchUsers();
+    }
+  }, [ad]);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("http://192.168.1.8:8000/getResponses", {
+        method: "post",
+        body: JSON.stringify(ad),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+      console.log(result);
+      if (result) {
+        const filteredRes = result.filter(
+          (item) => Object.keys(item).length !== 0
+        );
+        console.log(filteredRes);
+        setInterest(filteredRes);
+      } else {
+        Alert.alert("ERROR", "ERR");
+      }
+    } catch (e) {
+      console.log("GET ERROR: " + e);
+      Alert.alert("ERROR", "ERROR FETCHING");
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.contentContainer}></View>
+      <View style={styles.contentContainer}>
+        <Text>Interest {ad.id}</Text>
+
+        {interest.map((item) => (
+          <View>
+            <Text>Email :{item.email}</Text>
+            <Text>Name :{item.name}</Text>
+          </View>
+        ))}
+      </View>
+
       <Nav />
     </SafeAreaView>
   );
@@ -146,4 +192,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Charity;
+export default AdInterest;

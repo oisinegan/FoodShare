@@ -24,7 +24,7 @@ function Register({ navigation }) {
     setInfo((prev) => {
       return { ...prev, [name]: val.trim() };
     });
-    console.log(info);
+    (info);
   };
 
   const handleSubmit = async () => {
@@ -50,7 +50,7 @@ function Register({ navigation }) {
         Alert.alert("ERROR", "ERROR: USER ALREADY EXISTS");
       }
     } catch (e) {
-      console.log("FETCH ERROR: " + e);
+      ("FETCH ERROR: " + e);
       Alert.alert("ERROR", "ERROR");
     }
   };
