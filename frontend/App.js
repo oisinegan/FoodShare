@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import React, { useEffect, useState } from "react";
 
 import { NavigationContainer } from "@react-navigation/native";
@@ -11,6 +12,7 @@ import Profile from "./src/screens/Profile";
 import AdInterest from "./src/screens/AdInterest";
 import EditProfile from "./src/screens/EditProfile";
 import ExtendedProfile from "./src/screens/ExtendedProfile";
+import Messages from "./src/screens/Messages";
 
 const Stack = createNativeStackNavigator();
 export const Context = React.createContext();
@@ -89,6 +91,11 @@ export default function App() {
             name="ExtendedProfile"
             component={ExtendedProfile}
             options={{ headerShown: true }}
+          />
+          <Stack.Screen
+            name="Messages"
+            component={Messages}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       </Context.Provider>

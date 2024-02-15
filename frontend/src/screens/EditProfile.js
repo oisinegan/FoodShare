@@ -83,6 +83,7 @@ function EditProfile({ route, navigation }) {
       const result = await response.json();
 
       if (result) {
+        
         navigation.navigate("Profile");
       } else {
         Alert.alert("ERROR", "ERR");
@@ -141,8 +142,8 @@ function EditProfile({ route, navigation }) {
       <ScrollView style={styles.contentContainer}>
         <View style={styles.imageOuterCon}>
           <TouchableOpacity style={styles.imageCon} onPress={pickImage}>
-            {userInfo ? (
-              <Image source={{ uri: userInfo.img }} style={styles.image} />
+            {image ? (
+              <Image source={ image } style={styles.image} />
             ) : (
               <Image source={noPic} style={styles.image}></Image>
             )}

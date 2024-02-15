@@ -51,7 +51,7 @@ function Nav() {
               <TouchableOpacity onPress={() => navigation.navigate("Post")}>
                 <Text style={styles.nav}>Post</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate("Charity")}>
+              <TouchableOpacity onPress={() => navigation.navigate("Messages")}>
                 <Text style={styles.nav}>Charity</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => navigation.navigate("Profile")}>

@@ -27,14 +27,19 @@ import * as Location from "expo-location";
 import users from "../images/users.png";
 import whiteicon from "../images/whiteicon.png";
 
-function ExtendedProfile({ navigation }) {
+function ExtendedProfile({ route,navigation }) {
   const [user, setUser] = useContext(Context);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [town, setTown] = useState(null);
-
   const [items, setItems] = useState([]);
   const [likedItems, setLikedItems] = useState([]);
+
+  const { params } = route;
+  const loc = params;
+  const lat = loc.lat;
+  const long = loc.long;
+  console.log(lat + " "+ long);
 
   useEffect(() => {
     if (user != null) {
@@ -102,8 +107,9 @@ function ExtendedProfile({ navigation }) {
 
   const handleButtonPress = (item) => {
     console.log("PRESSED AD: " + item.id);
+    console.log("PRESSED AD: " + item.item);
 
-    navigation.navigate("AdInterest", { id: item.id });
+    navigation.navigate("AdInterest", { id: item.id, name: item.item, long:long, lat:lat });
   };
 
   const [refreshing, setRefreshing] = React.useState(false);
@@ -171,6 +177,47 @@ function ExtendedProfile({ navigation }) {
     } catch (e) {
       "GET ERROR: " + e;
       Alert.alert("ERROR", "ERROR");
+    }
+  }
+
+  function calculateDistance(adLat, adLon) {
+    //Formual from :
+    //https://www.geeksforgeeks.org/haversine-formula-to-find-distance-between-two-points-on-a-sphere/
+
+    // distance between latitude and longitudes
+    let userLat = lat;
+    let userLong = long;
+
+    if (userLong < 0) {
+      "userLong B: " + userLong;
+      userLong = userLong * -1;
+      "userLong A: " + userLong;
+    }
+
+    if (adLon < 0) {
+      "adLon B: " + adLon;
+      adLon = adLon * -1;
+      "adLon A: " + adLon;
+    }
+
+    let dLat = ((adLat - userLat) * Math.PI) / 180.0;
+    let dLon = ((adLon - userLong) * Math.PI) / 180.0;
+
+    // convert to radiansa
+    userLat = (userLat * Math.PI) / 180.0;
+    adLat = (adLat * Math.PI) / 180.0;
+
+    // apply formulae
+    let a =
+      Math.pow(Math.sin(dLat / 2), 2) +
+      Math.pow(Math.sin(dLon / 2), 2) * Math.cos(userLat) * Math.cos(adLat);
+    let rad = 6371;
+    let c = 2 * Math.asin(Math.sqrt(a));
+    let ans = rad * c;
+    if (ans < 2) {
+      return 2;
+    } else {
+      return Math.round(ans);
     }
   }
 
@@ -249,6 +296,9 @@ function ExtendedProfile({ navigation }) {
                 <Text style={styles.innerInfo}>.</Text>
                 <Text style={styles.innerInfo}>Expiry: {item.expiryDate}</Text>
               </View>
+              <Text style={styles.innerDistance}>
+                {calculateDistance(item.lat, item.long)}km away
+              </Text>
               <Text style={styles.extraInfo}>{item.extraInfo}</Text>
               <TouchableOpacity
                 style={[
@@ -370,18 +420,14 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-
     overflow: "hidden",
-
     marginBottom: -23,
   },
   postInnerContainer: {
     backgroundColor: "lightgrey",
-    flex: 1.5,
-
+    flex: 2,
     flexDirection: "column",
     position: "relative",
     zIndex: 2,
@@ -390,6 +436,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
     borderBottomRightRadius: 30,
   },
+
   innerTitle: {
     fontSize: 25,
     paddingTop: 15,

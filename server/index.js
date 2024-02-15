@@ -40,12 +40,6 @@ app.use(passport.session());
 
 require("./passportConfig")(passport);
 
-const getExampleRouter = require("./routes/exampleRoute");
-app.use("/exampleRouter", getExampleRouter);
-
-const getExampleDBconnection = require("./routes/exampleDBconnection");
-app.use("/exampleDBconnection", getExampleDBconnection);
-
 const loginRouter = require("./routes/Login");
 app.use("/Login", loginRouter);
 

@@ -27,6 +27,7 @@ import { useNavigation } from "@react-navigation/native";
 import users from "../images/users.png";
 import editProfile from "../images/editProfile.png";
 import posts from "../images/posts.png";
+import noPic from "../images/noPic.png";
 function Profile({ navigation }) {
   const [user, setUser] = useContext(Context);
   const [location, setLocation] = useState(null);
@@ -204,7 +205,7 @@ function Profile({ navigation }) {
         <View style={styles.topNav}>
           <TouchableOpacity
             style={styles.viewPostsContainer}
-            onPress={() => navigation.navigate("ExtendedProfile")}
+            onPress={() => navigation.navigate("ExtendedProfile",{long:location.coords.longitude, lat:location.coords.latitude })}
           >
             <Image source={posts} style={styles.viewPostsImage} />
           </TouchableOpacity>
@@ -220,12 +221,13 @@ function Profile({ navigation }) {
         <View style={styles.profileImageCont}>
           <View style={styles.profileImageInnerCont}>
             {userInfo ? (
-              <Image
-                source={{ uri: userInfo[0].Url }}
-                style={styles.profileImage}
-              />
+                 <Image
+                 source={{ uri: userInfo[0].Url }}
+                 style={styles.profileImage}
+               />
+             
             ) : (
-              <Text>LOADING..</Text>
+              <Image source={noPic} style={styles.profileImage} />
             )}
           </View>
         </View>

@@ -72,12 +72,9 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-
     overflow: "hidden",
-
     marginBottom: -23,
   },
   postInnerContainer: {
