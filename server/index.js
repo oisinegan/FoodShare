@@ -76,6 +76,12 @@ app.use("/updateUser", updateUserRouter);
 const getUserInfoRouter = require("./routes/getUserInfo");
 app.use("/getUserInfo", getUserInfoRouter);
 
+const registerCharityRouter = require("./routes/registerCharity");
+app.use("/registerCharity", registerCharityRouter);
+
+const getCharityRouter = require("./routes/getCharity");
+app.use("/getCharity", getCharityRouter);
+
 app.listen(process.env.PORT, () => {
   console.log("Server started on server " + process.env.PORT);
 });

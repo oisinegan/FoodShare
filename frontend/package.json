@@ -45,7 +45,8 @@
     "react-native-tab-view": "^3.5.2",
     "react-native-uuid": "^2.0.1",
     "react-native-web": "~0.19.6",
-    "stream-chat-expo": "^5.24.0"
+    "stream-chat-expo": "^5.24.0",
+    "expo-checkbox": "~2.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

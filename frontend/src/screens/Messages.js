@@ -90,20 +90,7 @@ const fetchData = async () => {
           const channels = await chatClient.queryChannels(filters, sort );
           // console.log("Channels:", channels);
 
-          channels.forEach((channel) => {
-            console.log("Channel ID:", channel.cid);
-            console.log("Channel Name:", channel.data.name);
-            console.log("Type:", channel.type);
-             // Access the members object within the channel's state
-  const channelsM = channel.state.members;
 
-  // Iterate through the members and log their information
-  Object.values(channelsM).forEach((member) => {
-    console.log("  Member ID:", member.user.id);
-    console.log("  Member Name:", member.user.name);
-            // ... (Access other properties as needed)
-          });
-        });
         console.log("IS CLIENT READY - "+ clientIsReady)
         setClientIsReady(true)
         console.log("IS CLIENT READY - "+ clientIsReady)

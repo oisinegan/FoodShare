@@ -53,6 +53,9 @@ function Nav() {
                 <Text style={styles.nav}>Post</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => navigation.navigate("Messages", { chatUsername: user.name })}>
+                <Text style={styles.nav}>Messages</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate("Charity", { chatUsername: user.name })}>
                 <Text style={styles.nav}>Charity</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
@@ -71,7 +74,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   conInner: {
-    paddingHorizontal: "10%",
+    paddingHorizontal: "3%",
     flexDirection: "row",
     justifyContent: "space-between",
     paddingTop: 15,
