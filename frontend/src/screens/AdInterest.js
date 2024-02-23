@@ -21,25 +21,102 @@ import { Context } from "../../App";
 import Nav from "../components/Nav";
 import noPic from "../images/noPic.png";
 import message from "../images/message.png";
+import { StreamChat } from 'stream-chat';
+import { chatApiKey } from '../config/chatConfig';
 
 function AdInterest({ route, navigation }) {
   const [user, setUser] = useContext(Context);
   const [location, setLocation] = useState(null);
   const [interest, setInterest] = useState([]);
+  const [userInfo, setUserInfo] = useState(null);
   const { params } = route;
   const ad = params;
-  console.log("PARAMS")
-  console.log(ad.long);
-  console.log(ad.lat)
+  const chatClient = StreamChat.getInstance(chatApiKey);
+
     
   useEffect(() => {
     if (ad != null) {
-    
+     
+      getUserInfo();
       fetchUsers();
       getUserLoc();
+      setupClient();
     }
+ 
+    
   }, [ad]);
 
+
+  const [clientIsReady, setClientIsReady] = useState(false);
+
+
+
+
+const setupClient = async () => {
+  console.log("WAITING 1")
+ 
+  //await chatClient.disconnectUser();
+ 
+
+  try {
+    
+    chatClient.connectUser(
+        {
+            id: user.name.toString(),
+            name: user.name.toString(),
+           
+        },
+        chatClient.devToken(user.name.toString()),
+    );
+
+    //console.log('Connected User ID from set up client:', chatClient.user.id);
+    console.log("IS CLIENT READY - "+ clientIsReady)
+    setClientIsReady(true)
+    console.log("IS CLIENT READY - "+ clientIsReady)
+  
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(`An error occurred while connecting the user: ${error.message}`);
+      }
+    }
+  };
+
+  if(!chatClient.user){
+    setupClient();
+  }
+
+
+
+
+
+const getUserInfo = async () => {
+  try {
+    const response = await fetch("http://192.168.1.8:8000/getUserInfo", {
+      method: "post",
+      body: JSON.stringify({ user }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result = await response.json();
+    if (result) {
+      //(result);
+      // const filteredRes = result.filter(
+      //   (item) => Object.keys(item).length !== 0
+      // );
+
+      /******** UPDATE FETCH TO NOT SEND USERS OWN ADS **************/
+
+      setUserInfo(result);
+     
+    } else {
+      Alert.alert("ERROR", "ERR");
+    }
+  } catch (e) {
+    Alert.alert("ERROR", e);
+  }
+};
 
   const fetchUsers = async () => {
     try {
@@ -52,12 +129,12 @@ function AdInterest({ route, navigation }) {
       });
 
       const result = await response.json();
-      console.log("RES" + result);
+     
       if (result) {
         const filteredRes = result.filter(
           (item) => Object.keys(item).length !== 0
         );
-        console.log(filteredRes);
+        
         setInterest(filteredRes);
       } else {
         Alert.alert("ERROR", "ERR");
@@ -121,42 +198,80 @@ function AdInterest({ route, navigation }) {
     
   };
 
+  const createMessageChannel = async (otherUser) => {
+    console.log("PRESSED");
+    console.log(user.name);
+    console.log("PRESSED");
+    try {
+      
+        
+        const userN = user.name.toString().toLowerCase();
+        const otherUserN = otherUser.name.toString().toLowerCase();
+        const channelName = userN+"_"+otherUserN;
+        console.log("channelName:", channelName);
+      const channel = chatClient.channel('messaging', {
+          name: channelName,
+          members: [ userN,otherUserN
+          ],
+      });
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.contentContainer}>
-        <Text style={styles.titleText}>Interest in {ad.name}..</Text>
+      await channel.create();
+      navigation.navigate("Messages");
 
-        {interest.map((item) => (
-          <View style={styles.interestCont}>
-            <View style={styles.imageCont}>
-              {item.Url ? (<Image  source={{ uri: item.Url }} style={styles.image} /> ):(    <Image source={noPic} style={styles.image} />)}
-            
-            </View>
+ 
+    
+    } catch (e) {
+      console.log("ERROR CREATING CHANNEL: " + e);
+    
+    }
+  };
 
-            <View style={styles.innerInterestCont}>
-              <Text style={styles.innerName}>{item.name}</Text>
-
-              <Text style={styles.innerPoints}>Share points: {item.points}</Text>
-            
-              <Text style={styles.innerDist}>Distance: {calculateDistance(item.lat, item.long)}km </Text>
-            
-            </View>
-            <View style={styles.imageMsgContainer}>
-              <View  style={styles.imageMsgInnerContainer}>
+  if(clientIsReady){
+    return (
+      <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.contentContainer}>
+          <Text style={styles.titleText}>Interest in {ad.name}..</Text>
+       
+  
+          {interest.map((item) => (
+            <View style={styles.interestCont}>
+              <View style={styles.imageCont}>
+                {item.Url ? (<Image  source={{ uri: item.Url }} style={styles.image} /> ):(    <Image source={noPic} style={styles.image} />)}
               
-            <Image source={message} style={styles.imageMsg} />
+              </View>
+  
+              <View style={styles.innerInterestCont}>
+                <Text style={styles.innerName}>{item.name}</Text>
+  
+                <Text style={styles.innerPoints}>Share points: {item.points}</Text>
+              
+                <Text style={styles.innerDist}>Distance: {calculateDistance(item.lat, item.long)}km </Text>
+              
+              </View>
+        
+              <TouchableOpacity style={styles.imageMsgContainer} onPress={()=>createMessageChannel(item)}>
+                <View  style={styles.imageMsgInnerContainer}>
+                
+              <Image source={message} style={styles.imageMsg} />
+              </View>
+              </TouchableOpacity>
             </View>
-            </View>
-          </View>
-        ))}
-
-
-      </ScrollView>
-
-      <Nav />
+          ))}
+  
+  
+        </ScrollView>
+  
+        <Nav />
+      </SafeAreaView>
+    );
+  }else{
+    <SafeAreaView>
+      <Text>
+        Waiting on user
+      </Text>
     </SafeAreaView>
-  );
+  }
+
 }
 
 const styles = StyleSheet.create({

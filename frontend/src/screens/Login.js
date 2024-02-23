@@ -32,6 +32,8 @@ function Login({ navigation }) {
     (info);
   };
 
+
+
   const handleSubmit = async () => {
     if (!info.username || !info.password) {
       (info);
@@ -70,6 +72,8 @@ function Login({ navigation }) {
       Alert.alert("ERROR", "ERROR");
     }
   };
+
+  
 
   return (
     <SafeAreaView>

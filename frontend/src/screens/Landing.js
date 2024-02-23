@@ -23,6 +23,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import whiteicon from "../images/whiteicon.png";
 import pin from "../images/pin.png";
 import * as Location from "expo-location";
+import { StreamChat } from 'stream-chat';
+import { chatApiKey } from '../config/chatConfig';
 
 import MapView, { Marker, Callout } from "react-native-maps";
 
@@ -33,6 +35,7 @@ function Landing({ navigation }) {
   const [errorMsg, setErrorMsg] = useState(null);
   const [refreshing, setRefreshing] = React.useState(false);
 
+  const chatClient = StreamChat.getInstance(chatApiKey);
   const [currView, setCurrView] = useState(0);
 
   const mapView = () => {
@@ -215,7 +218,8 @@ function Landing({ navigation }) {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    ("CALLED REFRESH");
+    console.log("CALLED REFRESH");
+    console.log(chatClient.user.name)
     fetchAllItems();
 
     setTimeout(() => {
@@ -281,45 +285,51 @@ function Landing({ navigation }) {
     let userLat = location.coords.latitude;
     let userLong = location.coords.longitude;
 
-    if (userLong < 0) {
-      "userLong B: " + userLong;
-      userLong = userLong * -1;
-      "userLong A: " + userLong;
+    if(userLat) {
+      if (userLong < 0) {
+        "userLong B: " + userLong;
+        userLong = userLong * -1;
+        "userLong A: " + userLong;
+      }
+  
+      if (adLon < 0) {
+        "adLon B: " + adLon;
+        adLon = adLon * -1;
+        "adLon A: " + adLon;
+      }
+  
+      let dLat = ((adLat - userLat) * Math.PI) / 180.0;
+      let dLon = ((adLon - userLong) * Math.PI) / 180.0;
+  
+      // convert to radiansa
+      userLat = (userLat * Math.PI) / 180.0;
+      adLat = (adLat * Math.PI) / 180.0;
+  
+      // apply formulae
+      let a =
+        Math.pow(Math.sin(dLat / 2), 2) +
+        Math.pow(Math.sin(dLon / 2), 2) * Math.cos(userLat) * Math.cos(adLat);
+      let rad = 6371;
+      let c = 2 * Math.asin(Math.sqrt(a));
+      let ans = rad * c;
+      if (ans < 2) {
+        return 2;
+      } else {
+        return Math.round(ans);
+      }
     }
 
-    if (adLon < 0) {
-      "adLon B: " + adLon;
-      adLon = adLon * -1;
-      "adLon A: " + adLon;
-    }
-
-    let dLat = ((adLat - userLat) * Math.PI) / 180.0;
-    let dLon = ((adLon - userLong) * Math.PI) / 180.0;
-
-    // convert to radiansa
-    userLat = (userLat * Math.PI) / 180.0;
-    adLat = (adLat * Math.PI) / 180.0;
-
-    // apply formulae
-    let a =
-      Math.pow(Math.sin(dLat / 2), 2) +
-      Math.pow(Math.sin(dLon / 2), 2) * Math.cos(userLat) * Math.cos(adLat);
-    let rad = 6371;
-    let c = 2 * Math.asin(Math.sqrt(a));
-    let ans = rad * c;
-    if (ans < 2) {
-      return 2;
-    } else {
-      return Math.round(ans);
-    }
+  
   }
 
   const [items, setItems] = useState([]);
 
   useEffect(() => {
     if (user != null) {
+      setupClient();
       fetchAllItems();
       getUserLoc();
+      
     }
   }, [user]);
 
@@ -371,11 +381,69 @@ function Landing({ navigation }) {
   const logout = async () => {
     try {
       await AsyncStorage.removeItem("token");
+      await chatClient.disconnectUser();
       setUser(null);
     } catch (e) {
       e;
     }
   };
+
+  const setupClient = async () => {
+    if(user !== null){
+
+    const streamChatUserId= user.name.toString()+"_"+user.id.toString();
+    const streamChatUserName= user.name.toString();
+ 
+
+    try {
+     // 
+
+      await chatClient.connectUser(
+          {
+              id: streamChatUserName,
+              name: streamChatUserName,
+              //image: 'https://getstream.io/random_svg/?name=John',
+          },
+          chatClient.devToken(streamChatUserName),
+      );
+       
+        console.log('Connected User ID:', streamChatUserName);
+        
+        
+  
+        // connectUser is an async function. So you can choose to await for it or not depending on your use case (e.g. to show custom loading indicator)
+        // But in case you need the chat to load from offline storage first then you should render chat components
+        // immediately after calling `connectUser()`.
+        // BUT ITS NECESSARY TO CALL connectUser FIRST IN ANY CASE.
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(`An error occurred while connecting the user: ${error.message}`);
+        }
+      }
+
+      console.log(chatClient.user.id)
+    }else{
+      console.log("USER IS NULL CANNOT SET CLIENT")
+    }
+    };
+  
+    // If the chat client has a value in the field `userID`, a user is already connected
+    // and we can skip trying to connect the user again.
+    if (!chatClient.userID) {
+      setupClient();
+    }
+   useEffect(()=>{
+    console.log("useEffect triggered");
+    if (chatClient && chatClient.wsConnection) {
+      console.log("set up!")
+      console.log(chatClient.user)
+      console.log(chatClient.name)
+    }
+    else{
+      console.log("NOT SET")
+    }
+    },[chatClient])
+      
 
   return (
     <SafeAreaView style={styles.container}>

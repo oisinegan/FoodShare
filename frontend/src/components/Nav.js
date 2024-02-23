@@ -24,6 +24,7 @@ import { Context } from "../../App";
 function Nav() {
   const [user, setUser] = useContext(Context);
   const navigation = useNavigation();
+  console.log(user)
 
   return (
     <SafeAreaView>
@@ -51,7 +52,7 @@ function Nav() {
               <TouchableOpacity onPress={() => navigation.navigate("Post")}>
                 <Text style={styles.nav}>Post</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate("Messages")}>
+              <TouchableOpacity onPress={() => navigation.navigate("Messages", { chatUsername: user.name })}>
                 <Text style={styles.nav}>Charity</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
