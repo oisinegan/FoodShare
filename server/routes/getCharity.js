@@ -19,6 +19,7 @@ router.get("/", (req, res) => {
           lat,
           website,
           number,
+          userId,
         } = row;
         charity.push({
             id,
@@ -27,6 +28,7 @@ router.get("/", (req, res) => {
             lat,
             website,
             number,
+            userId,
         });
       });
       console.log(charity);

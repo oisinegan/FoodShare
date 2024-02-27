@@ -222,9 +222,10 @@ function ExtendedProfile({ route,navigation }) {
   }
 
   const userAdsRoute = () => (
-    <View>
+    <View >
       <Text style={styles.title}>Your posts</Text>
-      <View
+      <ScrollView
+       style={styles.scrollCon}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -261,7 +262,7 @@ function ExtendedProfile({ route,navigation }) {
             </View>
           </View>
         ))}
-      </View>
+      </ScrollView>
     </View>
   );
 

@@ -7,7 +7,7 @@ router.post("/", (req, res) => {
   let info = req.body;
   console.log(info)
         const sql =
-          "INSERT INTO Charity (`name`, `long`, `lat`, `website`, `number`) VALUES ('" +
+          "INSERT INTO Charity (`name`, `long`, `lat`, `website`, `number`, `user`) VALUES ('" +
           info.name +
           "', '" +
           info.long +
@@ -17,6 +17,8 @@ router.post("/", (req, res) => {
           info.web +
           "', '" +
           info.phone +
+          "', '" +
+          info.userId +
           "')";
         connection.query(sql, (err, rows, fields) => {
           if (err) throw err;

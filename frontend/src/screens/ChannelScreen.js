@@ -19,6 +19,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../../App";
 import Nav from "../components/Nav";
 import { StreamChat } from "stream-chat";
+import noPic from "../images/noPic.png";
 import {
   chatApiKey,
   chatUserId,
@@ -34,10 +35,16 @@ function ChannelScreen({ route, navigation }) {
   // const { channel } = useAppContext();
   const { channel } = route.params;
   const [user, setUser] = useContext(Context);
+  //console.log(channel)
+  console.log(channel.state.members.name)
 
-  useEffect(() => {
-    channel.watch();
-  }, []);
+  if(channel){
+    for(const member in channel.state.members){
+      print(channel.state.members[member].name)
+    }
+  
+  }
+
   const chatClient = StreamChat.getInstance(chatApiKey);
 
   const [clientIsReady, setClientIsReady] = useState(false);
@@ -85,6 +92,133 @@ function ChannelScreen({ route, navigation }) {
     };
     setupClient();
 
+  
+    const showAlert = async () => {
+      Alert.alert('Complete share? ', 'This cannot be undone! Both parties will be awarded 5 share points ✅', [
+        {
+          text: 'Yes',
+          onPress: () => completeShare(),
+        },
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel!'),
+          style: 'cancel',
+        },
+      ]);
+
+    }
+
+    let otherUser = ""
+    if(channel){
+      console.log(channel.data.name)
+      let indexOf_ = channel.data.name.indexOf("_");
+      let indexOfSlash = channel.data.name.indexOf("/");
+      otherUser = (channel.data.name).substring(indexOf_ +1, indexOfSlash);
+      console.log(otherUser)
+    }
+
+    let indexOfAdId = channel.data.name.indexOf("/");
+    let AdId = (channel.data.name).substring(indexOfAdId +1, channel.data.name.length);
+    const completeShare = async () => {
+      console.log('Yes cancel');
+      
+      console.log("ADID = "+ AdId);
+      console.log(otherUser);
+      console.log(user.name)
+
+      const request = {
+        AdId,
+        otherUser,
+        userN: user.name
+      };
+      try {
+        const response = await fetch("http://192.168.1.8:8000/completeShare", {
+          method: "post",
+          body: JSON.stringify(request),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+  
+        const result = await response.json();
+        if (result) {
+          console.log(result)
+          console.log("Writen to completed Share")
+          deleteAd();
+        } else {
+          console.log("NO RESULT")
+        }
+      } catch (e) {
+        console.log("FETCH ERROR: " + e);
+        Alert.alert("ERROR", "ERROR");
+      }
+      //Write to completed share db - done
+      //Remove from ads db - done
+      //Add share points to user and other user profile - done
+      //FUTURE: (Add ad to both users activity)
+      //Delete Text channel = done
+      //Future: (Delete rest of channels that involve food item) or (Other users cant text in anymore with message saying item given away)
+    }
+
+    const deleteAd = async () => {
+      try {
+        const response = await fetch("http://192.168.1.8:8000/removeAd", {
+          method: "post",
+          body: JSON.stringify({AdId}),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+  
+        const result = await response.json();
+        if (result) {
+          console.log("DELETED")
+          
+          addSharePoints();
+        } else {
+          console.log("NOT DELETED")
+        }
+      } catch (e) {
+        console.log("FETCH ERROR: " + e);
+        Alert.alert("ERROR", "ERROR");
+      }
+    }
+
+    const addSharePoints = async () => {
+      const request1 = {
+   
+        otherUser,
+        userN: user.name
+      };
+   
+      try {
+        const response = await fetch("http://192.168.1.8:8000/addSharePoints", {
+          method: "post",
+          body: JSON.stringify(request1),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+  
+        const result = await response.json();
+        if (result) {
+          console.log("ADDED")
+          Alert.alert("5 share points added to each profile 🚀")
+          const destroy = await channel.delete();
+          console.log("DESTROY CHANNEL: "+ destroy);
+          navigation.navigate('Landing');
+        } else {
+          console.log("NOT DELETED")
+        }
+      } catch (e) {
+        console.log("FETCH ERROR: " + e);
+        Alert.alert("ERROR", "ERROR");
+      }
+  }
+    const deleteMessage = async () => {
+        //Delete channel
+    }
+    
 
     if(clientIsReady && channel){
       return (
@@ -97,8 +231,18 @@ function ChannelScreen({ route, navigation }) {
               </Text>
             </TouchableOpacity>
     
-            <Text style={styles.topNavTitle}>Name</Text>
-
+            <TouchableOpacity style={styles.completeButton}>
+              <Text style={styles.backText} onPress={() => showAlert()}>
+                Complete share
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.infoCon}>
+            <View style={styles.imageCon}>
+            
+          <Image source={noPic} style={styles.image}/>
+          </View>
+          <Text style={styles.name}>{otherUser}</Text>
           </View>
     
           <Channel channel={channel}>
@@ -120,16 +264,42 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    marginBottom: "27%",
+    marginBottom: "45%",
   },
   topNav: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-between",
   },
   backButton: {
     padding: 10,
-    paddingRight: 30,
-    marginLeft: -120,
+   
+  },
+  infoCon:{
+    flexDirection:"row",
+    backgroundColor:"lightgrey",
+    justifyContent:"center",
+    padding:10,
+  },
+  imageCon:{
+   flex:1,
+   paddingLeft:40,
+   
+  },  
+  image:{
+    width:50,
+    height: 50,
+    marginHorizontal:5,
+  },
+  name: {
+    textAlign: "left",
+    alignSelf: "center",
+    fontSize: 25,
+    fontWeight: "600",
+    color: "black",
+    flex:3,
+  },
+  completeButton:{
+    padding: 10,
   },
   backText: {
     color: "navy",
@@ -137,13 +307,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginHorizontal: 20,
   },
-  topNavTitle: {
-    textAlign: "center",
-    alignSelf: "center",
-    fontSize: 25,
-    fontWeight: "600",
-    color: "black",
-  },
+
 });
 
 export default ChannelScreen;

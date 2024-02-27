@@ -51,6 +51,8 @@ function Charity({ navigation }) {
     long = long.toFixed(6);
     lat = lat.toFixed(6);
 
+    let userId = user.id;
+
 
     if (
       !info.name ||
@@ -75,7 +77,7 @@ function Charity({ navigation }) {
     console.log(long)
     console.log(lat)
 
-    infoWithLoc = {...info,lat,long};
+    infoWithLoc = {...info,lat,long,userId};
     console.log(infoWithLoc);
    
 

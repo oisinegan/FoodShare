@@ -82,6 +82,15 @@ app.use("/registerCharity", registerCharityRouter);
 const getCharityRouter = require("./routes/getCharity");
 app.use("/getCharity", getCharityRouter);
 
+const completeShareRouter = require("./routes/CompleteShare");
+app.use("/completeShare", completeShareRouter);
+
+const removeAdRouter = require("./routes/removeAd");
+app.use("/removeAd", removeAdRouter);
+
+const addSharePointsRouter = require("./routes/addSharePoints");
+app.use("/addSharePoints", addSharePointsRouter);
+
 app.listen(process.env.PORT, () => {
   console.log("Server started on server " + process.env.PORT);
 });

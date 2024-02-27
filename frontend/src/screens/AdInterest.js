@@ -207,7 +207,7 @@ const getUserInfo = async () => {
         
         const userN = user.name.toString().toLowerCase();
         const otherUserN = otherUser.name.toString().toLowerCase();
-        const channelName = userN+"_"+otherUserN;
+        const channelName = userN+"_"+otherUserN + "/" + ad.id;
         console.log("channelName:", channelName);
       const channel = chatClient.channel('messaging', {
           name: channelName,
