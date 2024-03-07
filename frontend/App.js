@@ -27,6 +27,7 @@ import { AppProvider } from "./AppContext";
 import { StreamChat } from 'stream-chat';
 import { chatApiKey } from './src/config/chatConfig';
 
+
 const chatClient = StreamChat.getInstance(chatApiKey);
 
 export default function App() {
@@ -93,7 +94,7 @@ export default function App() {
           <Stack.Screen
             name="AdInterest"
             component={AdInterest}
-            options={{ headerShown: true }}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="EditProfile"
@@ -103,7 +104,7 @@ export default function App() {
           <Stack.Screen
             name="ExtendedProfile"
             component={ExtendedProfile}
-            options={{ headerShown: true }}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Messages"

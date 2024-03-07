@@ -24,6 +24,7 @@ import Nav from "../components/Nav";
 function Login({ navigation }) {
   const [info, setInfo] = useState([{}]);
   const [user, setUser] = useContext(Context);
+  const ip = 'http://192.168.1.8:8000';
 
   const handleChange = (name, val) => {
     setInfo((prev) => {
@@ -42,7 +43,7 @@ function Login({ navigation }) {
     }
 
     try {
-      const response = await fetch("http://192.168.1.8:8000/Login", {
+      const response = await fetch(ip+"/Login", {
         method: "post",
         body: JSON.stringify(info),
         headers: {
@@ -80,6 +81,9 @@ function Login({ navigation }) {
       <View style={styles.container}>
         <Text style={styles.title}>Login</Text>
         <View style={styles.innerContainer}>
+          <View style={styles.conBorder}>
+
+          
           <TextInput
             placeholder="Email"
             style={styles.input}
@@ -111,8 +115,10 @@ function Login({ navigation }) {
             </Text>
           </Text>
         </View>
-        <Nav />
+        </View>
+        
       </View>
+      <Nav />
     </SafeAreaView>
   );
 }
@@ -120,13 +126,23 @@ function Login({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fafaf9",
-    height: "100%",
+    height: "94.5%",
+    justifyContent:"center",
+    alignItems:"center",
+    paddingTop:"25%"
   },
   innerContainer: {
     flex: 1,
+    width: "90%",
+  },
+  conBorder:{
+    borderWidth:1,
+    borderColor:"grey",
+    borderRadius:25,
+    padding:15,
   },
   buttonContainer: {
-    flex: 0.2,
+ 
     justifyContent: "center",
     alignItems: "center",
   },
@@ -151,6 +167,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     elevation: 3,
     backgroundColor: "black",
+    marginBottom:25,
   },
   text: {
     fontSize: 16,
@@ -158,6 +175,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     letterSpacing: 0.25,
     color: "white",
+   
   },
 });
 

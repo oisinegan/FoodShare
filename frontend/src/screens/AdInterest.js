@@ -32,6 +32,7 @@ function AdInterest({ route, navigation }) {
   const { params } = route;
   const ad = params;
   const chatClient = StreamChat.getInstance(chatApiKey);
+  const ip = 'http://192.168.1.8:8000';
 
     
   useEffect(() => {
@@ -91,7 +92,7 @@ const setupClient = async () => {
 
 const getUserInfo = async () => {
   try {
-    const response = await fetch("http://192.168.1.8:8000/getUserInfo", {
+    const response = await fetch(ip+"/getUserInfo", {
       method: "post",
       body: JSON.stringify({ user }),
       headers: {
@@ -120,7 +121,7 @@ const getUserInfo = async () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("http://192.168.1.8:8000/getResponses", {
+      const response = await fetch(ip+"/getResponses", {
         method: "post",
         body: JSON.stringify(ad),
         headers: {
@@ -150,8 +151,8 @@ const getUserInfo = async () => {
     //https://www.geeksforgeeks.org/haversine-formula-to-find-distance-between-two-points-on-a-sphere/
 
     // distance between latitude and longitudes
-    let userLat = ad.lat;
-    let userLong = ad.long;
+    let userLat = ad?.lat;
+    let userLong = ad?.long;
 
     if (userLong < 0) {
       "userLong B: " + userLong;
@@ -229,6 +230,15 @@ const getUserInfo = async () => {
   if(clientIsReady){
     return (
       <SafeAreaView style={styles.container}>
+         <View style={styles.topNav}>
+            <TouchableOpacity style={styles.backButton}>
+              <Text style={styles.backText} onPress={() => navigation.goBack()}>
+                Back
+              </Text>
+            </TouchableOpacity>
+    
+            
+          </View>
         <ScrollView style={styles.contentContainer}>
           <Text style={styles.titleText}>Interest in {ad.name}..</Text>
        
@@ -279,6 +289,20 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     flex: 1,
   },
+  topNav: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  backButton: {
+    padding: 10,
+   
+  },
+  backText: {
+    color: "navy",
+    textAlign: "center",
+    fontSize: 20,
+    marginHorizontal: 20,
+  },
   contentContainer: {
     flex: 1,
     backgroundColor: "white",
@@ -286,7 +310,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 25,
     textAlign: "center",
-    marginTop: 20,
+     marginTop: 20,
     paddingBottom: 25,
   },
   interestCont: {

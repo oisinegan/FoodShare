@@ -28,12 +28,15 @@ import users from "../images/users.png";
 import editProfile from "../images/editProfile.png";
 import posts from "../images/posts.png";
 import noPic from "../images/noPic.png";
+import calculator from "../images/calculator.png";
+import handshake from "../images/business.png";
 function Profile({ navigation }) {
   const [user, setUser] = useContext(Context);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [town, setTown] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
+  const ip = 'http://192.168.1.8:8000';
 
   const [items, setItems] = useState([]);
   const [likedItems, setLikedItems] = useState([]);
@@ -47,7 +50,7 @@ function Profile({ navigation }) {
   }, [user]);
   const getUserInfo = async () => {
     try {
-      const response = await fetch("http://192.168.1.8:8000/getUserInfo", {
+      const response = await fetch(ip+"/getUserInfo", {
         method: "post",
         body: JSON.stringify({ user }),
         headers: {
@@ -76,7 +79,7 @@ function Profile({ navigation }) {
 
   const fetchAllItems = async () => {
     try {
-      const response = await fetch("http://192.168.1.8:8000/retrieveUserAds", {
+      const response = await fetch(ip+"/retrieveUserAds", {
         method: "post",
         body: JSON.stringify({ user }),
         headers: {
@@ -109,7 +112,7 @@ function Profile({ navigation }) {
     try {
       "userid = " + user.id;
       ("CALLING LIKED ADS");
-      const response = await fetch("http://192.168.1.8:8000/retrieveLikedAds", {
+      const response = await fetch(ip+"/retrieveLikedAds", {
         method: "post",
         body: JSON.stringify({ user }),
         headers: {
@@ -232,20 +235,38 @@ function Profile({ navigation }) {
           </View>
         </View>
 
-        <Text style={styles.title}>{user.name}</Text>
-        <Text style={styles.locInfo}>{town}</Text>
-        {userInfo ? (
-          <>
-            <Text style={styles.locInfo}>
-              Share Points: {userInfo[0].points}
-            </Text>
-          </>
-        ) : (
-          <Text>LOADING..</Text>
-        )}
+        <Text style={styles.userTitle}>{user.name}</Text>
+        <Text style={styles.locInfo}>📍{town}</Text>
+       
 
         <View style={styles.activity}>
-          <Text style={styles.title}>Activity</Text>
+          <Text style={styles.title}>Total Shares</Text>
+          <View style={styles.imgCon} >
+          <Image
+                 source={handshake}
+                 style={styles.shares}
+               /></View>
+           {userInfo ? (
+          <>
+           <Text style={styles.shareRes}>{(userInfo[0].points)/5}</Text>
+          </>
+        ) : (
+          <Text></Text>
+        )}
+
+           <Text style={styles.title}>Share Points</Text>
+           <View style={styles.imgCon}><Image
+                 source={calculator}
+                 style={styles.shares}
+               /></View>
+               {userInfo ? (
+          <>
+           <Text style={styles.shareRes}>{userInfo[0].points}</Text>
+          </>
+        ) : (
+          <Text></Text>
+        )}
+           
         </View>
       </ScrollView>
       <Nav />
@@ -262,14 +283,16 @@ const styles = StyleSheet.create({
     marginBottom: 70,
   },
   contentContainer: {},
-  title: {
-    fontSize: 40,
-    marginTop: 10,
+  userTitle:{
+    fontSize: 50,
+    
     textAlign: "center",
   },
   locInfo: {
     fontSize: 30,
-    marginTop: 10,
+    marginTop: 40,
+    marginBottom:40,
+    fontWeight:"bold",
     textAlign: "center",
   },
   topNav: {
@@ -308,11 +331,37 @@ const styles = StyleSheet.create({
     borderRadius: 40,
   },
   activity: {
-    backgroundColor: "lightgrey",
+    //backgroundColor: "lightgrey",
+    justifyContent:"center",
+    flexDirection:"column",
     flex: 1,
-    //Delete when adding content
-    paddingBottom: 400,
+    marginVertical:10,
   },
+
+  title: {
+    fontSize: 35,
+    marginTop: 10,
+    textAlign: "center",
+  },
+  imgCon:{
+    flexDirection:"row",
+    justifyContent:"center",
+  },
+  shares:{
+    height: 150,
+    width: 150,
+    borderRadius: 100,
+    padding:20,
+    marginTop:20,
+    backgroundColor:"white",
+  },
+  shareRes:{
+      fontSize: 45,
+      fontWeight:"bold",
+      marginVertical: 20,
+      textAlign: "center",
+  },
+
 });
 
 export default Profile;

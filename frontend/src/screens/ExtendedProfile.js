@@ -34,6 +34,7 @@ function ExtendedProfile({ route,navigation }) {
   const [town, setTown] = useState(null);
   const [items, setItems] = useState([]);
   const [likedItems, setLikedItems] = useState([]);
+  const ip = 'http://192.168.1.8:8000';
 
   const { params } = route;
   const loc = params;
@@ -50,7 +51,7 @@ function ExtendedProfile({ route,navigation }) {
 
   const fetchAllItems = async () => {
     try {
-      const response = await fetch("http://192.168.1.8:8000/retrieveUserAds", {
+      const response = await fetch(ip+"/retrieveUserAds", {
         method: "post",
         body: JSON.stringify({ user }),
         headers: {
@@ -83,7 +84,7 @@ function ExtendedProfile({ route,navigation }) {
     try {
       "userid = " + user.id;
       ("CALLING LIKED ADS");
-      const response = await fetch("http://192.168.1.8:8000/retrieveLikedAds", {
+      const response = await fetch(ip+"/retrieveLikedAds", {
         method: "post",
         body: JSON.stringify({ user }),
         headers: {
@@ -151,9 +152,9 @@ function ExtendedProfile({ route,navigation }) {
     try {
       const response = await fetch(
         "https://nominatim.openstreetmap.org/reverse?format=json&lat=" +
-          location.coords.latitude +
+          location?.coords?.latitude +
           "&lon=" +
-          location.coords.longitude,
+          location?.coords?.longitude,
         {
           method: "get",
         }
@@ -332,6 +333,15 @@ function ExtendedProfile({ route,navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
+       <View style={styles.topNav}>
+            <TouchableOpacity style={styles.backButton}>
+              <Text style={styles.backText} onPress={() => navigation.goBack()}>
+                Back
+              </Text>
+            </TouchableOpacity>
+    
+            
+          </View>
       <View style={styles.contentContainer}>
         <TabView
           navigationState={{ index, routes }}
@@ -363,9 +373,18 @@ const styles = StyleSheet.create({
     paddingBottom: 25,
   },
   topNav: {
-    backgroundColor: "pink",
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  backButton: {
+    padding: 10,
+   
+  },
+  backText: {
+    color: "navy",
+    textAlign: "center",
+    fontSize: 20,
+    marginHorizontal: 20,
   },
   viewPostsContainer: {
     justifyContent: "flex-start",

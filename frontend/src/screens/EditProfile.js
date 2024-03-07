@@ -33,6 +33,7 @@ function EditProfile({ route, navigation }) {
   const userInfo = params;
   console.log("USER LOG");
   console.log(userInfo);
+  const ip = 'http://192.168.1.8:8000';
 
   const [info, setInfo] = useState({
     userId: user.id,
@@ -75,7 +76,7 @@ function EditProfile({ route, navigation }) {
       data.append("long", long);
       data.append("lat", lat);
 
-      const response = await fetch("http://192.168.1.8:8000/updateUser", {
+      const response = await fetch(ip+"/updateUser", {
         method: "post",
         body: data,
       });

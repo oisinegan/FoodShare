@@ -33,6 +33,7 @@ function Charity({ navigation }) {
   const [isChecked, setChecked] = useState(false);
   const [info, setInfo] = useState([{}]);
   const [items, setItems] = useState([]);
+  const ip = 'http://192.168.1.8:8000';
 
 
   const handleChange = (name, val) => {
@@ -82,7 +83,7 @@ function Charity({ navigation }) {
    
 
     try {
-      const response = await fetch("http://192.168.1.8:8000/registerCharity", {
+      const response = await fetch(ip+"/registerCharity", {
         method: "post",
         body: JSON.stringify(infoWithLoc),
         headers: {
@@ -92,7 +93,6 @@ function Charity({ navigation }) {
 
       const result = await response.json();
       if (result) {
-        
         setModalVisible(!modalVisible)
       } else {
         Alert.alert("ERROR", "ERR");
@@ -116,7 +116,7 @@ function Charity({ navigation }) {
 
   const fetchCharity = async () => {
     try {
-      const response = await fetch("http://192.168.1.8:8000/getCharity", {
+      const response = await fetch(ip+"/getCharity", {
         method: "get",
         headers: {
           "Content-Type": "application/json",

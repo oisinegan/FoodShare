@@ -10,10 +10,12 @@ import {
   Alert,
   TextInput,
   Image,
+  StatusBar,
   Dimensions,
+  Modal,
   RefreshControl,
   ImageBackground,
-  StatusBar,
+ 
   ScrollView,
 } from "react-native";
 import React, { useContext, useState, useEffect } from "react";
@@ -22,11 +24,13 @@ import Nav from "../components/Nav";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import whiteicon from "../images/whiteicon.png";
 import pin from "../images/pin.png";
+import settings from "../images/settings.png";
+import messageIc from "../images/messageIc.png";
 import * as Location from "expo-location";
 import { StreamChat } from 'stream-chat';
 import { chatApiKey } from '../config/chatConfig';
-
-import MapView, { Marker, Callout } from "react-native-maps";
+import { SearchBar } from '@rneui/themed';
+import MapView, { Marker, Callout, Polygon } from "react-native-maps";
 
 function Landing({ navigation }) {
   const [user, setUser] = useContext(Context);
@@ -37,19 +41,71 @@ function Landing({ navigation }) {
 
   const chatClient = StreamChat.getInstance(chatApiKey);
   const [currView, setCurrView] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const ip = 'http://192.168.1.8:8000';
+
+
 
   const mapView = () => {
     return (
       <View style={styles.contentContainer}>
+
+<Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Log out?</Text>
+    
+
+          <Pressable
+              style={[styles.button1, styles.buttonClose]}
+              onPress={() =>logout()}>
+              <Text style={styles.textStyle}>Yes, Logout!</Text>
+            </Pressable>
+
+            <Pressable
+              style={[styles.button2, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}>
+              <Text style={styles.textStyle}>Cancel</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
         {user === null ? (
           <Text style={styles.title}>Landing screen </Text>
         ) : (
           <>
-            <Text style={styles.title}>Landing screen {user.name}</Text>
-            <View style={styles.controls}>
-              <TouchableOpacity style={styles.logoutCon} onPress={logout}>
-                <Text style={styles.logout}>Logout</Text>
+             <View style={styles.searchCon}>
+                  <View  style={styles.search}>
+                    <SearchBar
+                   
+      placeholder="Type Here..."
+      onChangeText={updateSearch}
+      value={search}
+    />
+    </View>
+    <TouchableOpacity  onPress={()=>setModalVisible(!modalVisible)}>
+                <Image
+                            source={settings}
+                            style={styles.searchButton}
+                          />
               </TouchableOpacity>
+              <TouchableOpacity  onPress={()=>navigation.navigate("Messages")}>
+                          <Image
+                            source={messageIc}
+                            style={styles.searchButton}
+                          />
+                           </TouchableOpacity>
+
+</View>
+            <View style={styles.controls}>
+              
               <TouchableOpacity
                 style={styles.changeViewButton}
                 onPress={() => setCurrView(0)}
@@ -79,6 +135,15 @@ function Landing({ navigation }) {
                     longitude: item.long,
                   }}
                 >
+                <Polygon
+                  key={index}
+                  style={{backgroundColor:"red",padding:20}}
+                 coordinate={{
+                  latitude: item.lat,
+                  longitude: item.long,
+                }}
+                onPress={() => this.toggle(item)}
+              /> 
                   <Callout>
                     <View style={styles.map_postContainer}>
                       <View style={styles.map_imageContainer}>
@@ -140,6 +205,13 @@ function Landing({ navigation }) {
     );
   };
 
+  const [search, setSearch] = useState("");
+
+const updateSearch = (search) => {
+  setSearch(search);
+};
+
+
   const listView = () => {
     return (
       <ScrollView
@@ -148,15 +220,62 @@ function Landing({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+         <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Log out?</Text>
+    
+
+          <Pressable
+              style={[styles.button1, styles.buttonClose]}
+              onPress={() =>logout()}>
+              <Text style={styles.textStyle}>Yes, Logout!</Text>
+            </Pressable>
+
+            <Pressable
+              style={[styles.button2, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}>
+              <Text style={styles.textStyle}>Cancel</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
         {user === null ? (
           <Text style={styles.title}>Landing screen </Text>
         ) : (
           <>
-            <Text style={styles.title}>Landing screen {user.name}</Text>
-            <View style={styles.controls}>
-              <TouchableOpacity style={styles.logoutCon} onPress={logout}>
-                <Text style={styles.logout}>Logout</Text>
+                    <View style={styles.searchCon}>
+                  <View  style={styles.search}>
+                    <SearchBar
+                   
+      placeholder="Type Here..."
+      onChangeText={updateSearch}
+      value={search}
+    />
+    </View>
+    <TouchableOpacity  onPress={()=>setModalVisible(!modalVisible)}>
+                <Image
+                            source={settings}
+                            style={styles.searchButton}
+                          />
               </TouchableOpacity>
+              <TouchableOpacity  onPress={()=>navigation.navigate("Messages")}>
+                          <Image
+                            source={messageIc}
+                            style={styles.searchButton}
+                          />
+                           </TouchableOpacity>
+
+</View>
+            <View style={styles.controls}>
+             
               <TouchableOpacity
                 style={styles.changeViewButton}
                 onPress={() => setCurrView(1)}
@@ -244,7 +363,7 @@ function Landing({ navigation }) {
   const registerInterest = async (item) => {
     console.log(process.env.IP_ADDRESS + "/registerInterest");
     try {
-      const response = await fetch("http://192.168.1.8:8000/registerInterest", {
+      const response = await fetch(ip+"/registerInterest", {
         method: "post",
         body: JSON.stringify({
           adId: item.id,
@@ -282,8 +401,8 @@ function Landing({ navigation }) {
     //https://www.geeksforgeeks.org/haversine-formula-to-find-distance-between-two-points-on-a-sphere/
 
     // distance between latitude and longitudes
-    let userLat = location.coords.latitude;
-    let userLong = location.coords.longitude;
+    let userLat = location?.coords?.latitude;
+    let userLong = location?.coords?.longitude;
 
     if(userLat) {
       if (userLong < 0) {
@@ -346,8 +465,8 @@ function Landing({ navigation }) {
 
   const fetchAllItems = async () => {
     try {
-      "BEFORE FETCH" + user.id;
-      const response = await fetch("http://192.168.1.8:8000/getAllItems", {
+      
+      const response = await fetch(ip+"/getAllItems", {
         method: "post",
         body: JSON.stringify(user),
         headers: {
@@ -373,7 +492,7 @@ function Landing({ navigation }) {
         Alert.alert("ERROR", "ERR");
       }
     } catch (e) {
-      console.log("GET ERROR: " + e);
+      console.log("GET ERROR11: " + e);
       Alert.alert("ERROR", "ERROR FETCHING");
     }
   };
@@ -383,6 +502,7 @@ function Landing({ navigation }) {
       await AsyncStorage.removeItem("token");
       await chatClient.disconnectUser();
       setUser(null);
+      setModalVisible(!modalVisible)
     } catch (e) {
       e;
     }
@@ -447,6 +567,13 @@ function Landing({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar
+        animated={true}
+        backgroundColor="#61dafb"
+      
+       
+       
+      />
       {controlView()()}
       <Nav />
     </SafeAreaView>
@@ -497,8 +624,71 @@ const styles = StyleSheet.create({
 
   controls: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     paddingHorizontal: 10,
+  },
+
+  searchCon:{
+   // backgroundColor:"red",
+    flexDirection:"row",
+    alignItems:"center",
+  },
+  search:{
+    backgroundColor:"white",
+    flex:1,
+  
+  },
+  searchButton:{
+    height:35,
+    marginHorizontal:5,
+    width:35,
+  },  
+
+
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: '#FAF9F6',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button1: {
+    borderRadius: 20,
+    marginTop:10,
+    padding: 15,
+    elevation: 2,
+    backgroundColor:"green",
+  },
+  button2: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    marginTop:15,
+    backgroundColor:"red",
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    fontSize:20,
+    textAlign: 'center',
   },
 
   //LIST VIEW

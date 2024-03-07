@@ -29,6 +29,7 @@ import uuid from "react-native-uuid";
 function Post({ navigation }) {
   const [user, setUser] = useContext(Context);
   const [location, setLocation] = useState(null);
+  const ip = 'http://192.168.1.8:8000';
 
   const [info, setInfo] = useState({
     userId: user.id,
@@ -85,7 +86,7 @@ function Post({ navigation }) {
 
       data;
 
-      const response = await fetch("http://192.168.1.8:8000/PostAd", {
+      const response = await fetch(ip+ "/PostAd", {
         method: "post",
         body: data,
       });

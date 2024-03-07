@@ -31,12 +31,14 @@ import { useAppContext } from "../../AppContext";
 import { Channel, MessageList, MessageInput } from "stream-chat-expo";
 
 
+
 function ChannelScreen({ route, navigation }) {
   // const { channel } = useAppContext();
   const { channel } = route.params;
   const [user, setUser] = useContext(Context);
   //console.log(channel)
   console.log(channel.state.members.name)
+  const ip = 'http://172.20.10.2:8000';
 
   if(channel){
     for(const member in channel.state.members){
@@ -132,7 +134,7 @@ function ChannelScreen({ route, navigation }) {
         userN: user.name
       };
       try {
-        const response = await fetch("http://192.168.1.8:8000/completeShare", {
+        const response = await fetch(ip+"/completeShare", {
           method: "post",
           body: JSON.stringify(request),
           headers: {
@@ -162,7 +164,7 @@ function ChannelScreen({ route, navigation }) {
 
     const deleteAd = async () => {
       try {
-        const response = await fetch("http://192.168.1.8:8000/removeAd", {
+        const response = await fetch(ip+"/removeAd", {
           method: "post",
           body: JSON.stringify({AdId}),
           headers: {
@@ -192,7 +194,7 @@ function ChannelScreen({ route, navigation }) {
       };
    
       try {
-        const response = await fetch("http://192.168.1.8:8000/addSharePoints", {
+        const response = await fetch(ip+"/addSharePoints", {
           method: "post",
           body: JSON.stringify(request1),
           headers: {

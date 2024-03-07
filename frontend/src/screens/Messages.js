@@ -33,7 +33,7 @@ import { ChannelList } from "stream-chat-expo";
 
 
 
-function Messages({route, navigation }) {
+function Messages({navigation }) {
 
   const [user, setUser] = useContext(Context);
   const chatClient = StreamChat.getInstance(chatApiKey);
