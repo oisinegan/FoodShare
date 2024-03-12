@@ -84,7 +84,7 @@ function Post({ navigation }) {
       data.append("long", long);
       data.append("lat", lat);
 
-      data;
+   
 
       const response = await fetch(ip+ "/PostAd", {
         method: "post",
@@ -94,6 +94,7 @@ function Post({ navigation }) {
       const result = await response.json();
 
       if (result) {
+        navigation.navigate("Landing")
       } else {
         Alert.alert("ERROR", "ERR");
       }
@@ -112,15 +113,14 @@ function Post({ navigation }) {
       quality: 1,
     });
 
-    // (result.uri);
-    // (result.assets[0].uri);
+
 
     if (!result.canceled) {
       const timeStamp = Date.now();
       const uniqueCode = uuid.v4();
       const imgName = user.id + "_" + timeStamp + "_" + uniqueCode + ".jpeg";
 
-      "IMAGE NAME: " + imgName;
+     
 
       setImage({
         uri: result.assets[0].uri,

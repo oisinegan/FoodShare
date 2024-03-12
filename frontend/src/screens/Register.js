@@ -45,7 +45,7 @@ function Register({ navigation }) {
 
       const result = await response.json();
       if (result) {
-        Alert.alert("WOEKS", "WORKS: " + result);
+       
         navigation.navigate("Login");
       } else {
         Alert.alert("ERROR", "ERROR: USER ALREADY EXISTS");

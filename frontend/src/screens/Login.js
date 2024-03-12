@@ -54,7 +54,7 @@ function Login({ navigation }) {
       const result = await response.json();
       (result);
       if (result.user) {
-        Alert.alert("WOEKS", "WORKS: " + result);
+       
 
         try {
           await AsyncStorage.setItem("token", result.user);

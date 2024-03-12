@@ -26,6 +26,7 @@ import whiteicon from "../images/whiteicon.png";
 import pin from "../images/pin.png";
 import settings from "../images/settings.png";
 import messageIc from "../images/messageIc.png";
+import searchB from "../images/search.png";
 import * as Location from "expo-location";
 import { StreamChat } from 'stream-chat';
 import { chatApiKey } from '../config/chatConfig';
@@ -55,7 +56,7 @@ function Landing({ navigation }) {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
+         
           setModalVisible(!modalVisible);
         }}>
         <View style={styles.centeredView}>
@@ -81,15 +82,20 @@ function Landing({ navigation }) {
           <Text style={styles.title}>Landing screen </Text>
         ) : (
           <>
-             <View style={styles.searchCon}>
+                                <View style={styles.searchCon}>
                   <View  style={styles.search}>
-                    <SearchBar
-                   
-      placeholder="Type Here..."
-      onChangeText={updateSearch}
-      value={search}
-    />
+                  <TextInput
+          placeholder="Search item"
+          style={styles.searchBar}
+          // onChangeText={(val) => handleChange("extraInfo", val)}
+        />
     </View>
+    <TouchableOpacity  onPress={()=>console.log("Search")}>
+                <Image
+                            source={searchB}
+                            style={styles.searchButton}
+                          />
+              </TouchableOpacity>
     <TouchableOpacity  onPress={()=>setModalVisible(!modalVisible)}>
                 <Image
                             source={settings}
@@ -225,7 +231,7 @@ const updateSearch = (search) => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
+         
           setModalVisible(!modalVisible);
         }}>
         <View style={styles.centeredView}>
@@ -253,13 +259,18 @@ const updateSearch = (search) => {
           <>
                     <View style={styles.searchCon}>
                   <View  style={styles.search}>
-                    <SearchBar
-                   
-      placeholder="Type Here..."
-      onChangeText={updateSearch}
-      value={search}
-    />
+                  <TextInput
+          placeholder="Search item"
+          style={styles.searchBar}
+          // onChangeText={(val) => handleChange("extraInfo", val)}
+        />
     </View>
+    <TouchableOpacity  onPress={()=>console.log("Search")}>
+                <Image
+                            source={searchB}
+                            style={styles.searchButton}
+                          />
+              </TouchableOpacity>
     <TouchableOpacity  onPress={()=>setModalVisible(!modalVisible)}>
                 <Image
                             source={settings}
@@ -298,9 +309,11 @@ const updateSearch = (search) => {
             </View>
             <View style={styles.postInnerContainer}>
               <Text style={styles.innerTitle}>{item.item}</Text>
+              {user ? (
               <Text style={styles.innerDistance}>
                 {calculateDistance(item.lat, item.long)}km away
               </Text>
+              ):(null)}
               <View style={styles.postInnerInfoContainer}>
                 <Text style={styles.innerInfo}>{item.brand}</Text>
                 <Text style={styles.innerInfo}>.</Text>
@@ -311,7 +324,7 @@ const updateSearch = (search) => {
                 <Text style={styles.innerInfo}>Expiry: {item.expiryDate}</Text>
               </View>
               <Text style={styles.extraInfo}>{item.extraInfo}</Text>
-              <TouchableOpacity
+              {user ? ( <TouchableOpacity
                 style={[
                   styles.postLikeButton,
                   isPressed.includes(item.id) && styles.buttonPressed,
@@ -319,7 +332,8 @@ const updateSearch = (search) => {
                 onPress={() => handleButtonPress(item)}
               >
                 <Image source={whiteicon} style={styles.postLikeButtonIcon} />
-              </TouchableOpacity>
+              </TouchableOpacity>):(null)}
+             
             </View>
           </View>
         ))}
@@ -377,14 +391,14 @@ const updateSearch = (search) => {
       });
 
       const result = await response.json();
-      if (result) {
-        Alert.alert("Interest sent!");
-      } else {
+      if (!result) {
+       
+     
         Alert.alert("ERROR", "ERR");
       }
     } catch (e) {
       "GET ERROR: " + e;
-      Alert.alert("ERROR", "ERROR - E");
+      Alert.alert("ERROR", "ERROR: "+ e);
     }
   };
 
@@ -540,7 +554,7 @@ const updateSearch = (search) => {
           console.error(`An error occurred while connecting the user: ${error.message}`);
         }
       }
-
+      console.log("Inside of ")
       console.log(chatClient.user.id)
     }else{
       console.log("USER IS NULL CANNOT SET CLIENT")
@@ -636,11 +650,18 @@ const styles = StyleSheet.create({
   search:{
     backgroundColor:"white",
     flex:1,
-  
+  },
+  searchBar:{
+    backgroundColor:"lightgrey",
+    padding:10,
+    marginHorizontal:5,
+    borderRadius:50,
+    borderWidth:1,
+    borderColor:"black",
   },
   searchButton:{
     height:35,
-    marginHorizontal:5,
+    marginRight:7,
     width:35,
   },  
 
