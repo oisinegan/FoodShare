@@ -246,7 +246,7 @@ const getUserInfo = async () => {
           {interest.map((item) => (
             <View style={styles.interestCont}>
               <View style={styles.imageCont}>
-                {item.Url ? (<Image  source={{ uri: item.Url }} style={styles.image} /> ):(    <Image source={noPic} style={styles.image} />)}
+                {item.url ? (<Image  source={{ uri: item.url }} style={styles.image} /> ):(    <Image source={noPic} style={styles.image} />)}
               
               </View>
   
@@ -328,6 +328,7 @@ const styles = StyleSheet.create({
   image: {
     height: 70,
     width: 70,
+    borderRadius:20,
   },
   innerInterestCont: {
     justifyContent: "center",

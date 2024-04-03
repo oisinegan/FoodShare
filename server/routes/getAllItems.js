@@ -1,58 +1,29 @@
 const express = require("express");
 const router = express.Router();
-const connection = require("../config/dbConfig");
+const supabase = require("../config/dbConfig");
 
-router.post("/", (req, res) => {
-  connection.connect();
+router.post("/", async (req, res) => {
   let info = req.body;
   console.log(info);
+  console.log(info.id);
+  try{
+    const {data,error} = await supabase.from('ads').select('*').neq('userId',info.id);
 
-  connection.query(
-    "SELECT * FROM ads WHERE userId != " + info.id + ";",
-
-    (err, rows, fields) => {
-      if (err) throw err;
-      const ads = [{}];
-      rows.forEach((row) => {
-        const {
-          id,
-          item,
-          image_url,
-          brand,
-          userId,
-          expiryDate,
-          size,
-          measurementType,
-          quant,
-          extraInfo,
-          datePosted,
-          timePosted,
-          postTo,
-          long,
-          lat,
-        } = row;
-        ads.push({
-          id,
-          item,
-          image_url,
-          brand,
-          userId,
-          expiryDate,
-          size,
-          measurementType,
-          quant,
-          extraInfo,
-          datePosted,
-          timePosted,
-          postTo,
-          long,
-          lat,
-        });
-      });
-      console.log(ads);
-      res.send(ads);
+    if(error){
+      console.log("ERROR: "+ error);
     }
-  );
+    if(!data){
+      console.log("No ads found")
+    }
+    console.log("ADS: ")
+    console.log(data);
+    res.send(data)
+
+  }catch(err){
+    console.log("Error fetching: " + err.message);
+  }
+
+ 
 });
 
 module.exports = router;

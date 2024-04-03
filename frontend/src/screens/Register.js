@@ -35,6 +35,7 @@ function Register({ navigation }) {
     }
 
     try {
+      info.email = info.email.toString().toLowerCase()
       const response = await fetch(ip+"/Register", {
         method: "post",
         body: JSON.stringify(info),

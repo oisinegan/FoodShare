@@ -1,22 +1,27 @@
 const express = require("express");
 const router = express.Router();
-const connection = require("../config/dbConfig");
+const supabase = require("../config/dbConfig");
 const bycrpt = require("bcrypt");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const secretKey = process.env.SECRET_KEY;
 
 router.post("/", (req, res, next) => {
-  connection.connect();
+  console.log("req.body")
   console.log(req.body);
   let info = req.body;
   console.log(info);
   passport.authenticate("local", (err, user, info) => {
-    if (err) throw err;
+    console.log("Auth.....")
+   // if (err) throw err;
+    if(err){
+      console.log("Error during authenticating: "+ err.message);
+    }
     if (!user) {
       console.log("NO USER");
       res.send({ user: false });
     } else {
+      console.log("user exisrs")
       req.logIn(user, (err) => {
         if (err) throw err;
         const token = jwt.sign(

@@ -1,62 +1,38 @@
 const express = require("express");
 const router = express.Router();
 const connection = require("../config/dbConfig");
+const supabase = require("../config/dbConfig");
+const { trace } = require("./Login");
 
-router.post("/", (req, res) => {
-  let info = req.body;
-  console.log(info);
-  connection.connect();
-  console.log(info.id);
+router.post("/", async(req, res) => {
 
-  connection.query(
-    "SELECT ads.* FROM ads INNER JOIN applicants ON ads.id = applicants.adId WHERE applicants.userInterested = " +
-      info.user.id +
-      ";",
+  try{
+    let info = req.body;
+    console.log(info);
 
-    (err, rows, fields) => {
-      if (err) throw err;
-      const ads = [];
-      rows.forEach((row) => {
-        const {
-          id,
-          item,
-          image_url,
-          brand,
-          userId,
-          expiryDate,
-          size,
-          measurementType,
-          quant,
-          extraInfo,
-          datePosted,
-          timePosted,
-          postTo,
-          long,
-          lat,
-        } = row;
-        ads.push({
-          id,
-          item,
-          image_url,
-          brand,
-          userId,
-          expiryDate,
-          size,
-          measurementType,
-          quant,
-          extraInfo,
-          datePosted,
-          timePosted,
-          postTo,
-          long,
-          lat,
-        });
-      });
-      console.log("USER LIKED ADS");
-      console.log(ads);
-      res.send(ads);
+    const {data:userIds,error} = await supabase.from('applicants').select('adId').eq('userInterested',info.user.id);
+    if(error) throw error;
+    console.log("USER LIKED ADS");
+    console.log(userIds);
+    const ids = userIds.map(id=>id.adId);
+    console.log(ids);
+    try{
+      const{data,error} = await supabase.from('ads').select('*').in('id', ids);
+       if(error){
+        console.log("ERRROR 1")
+         console.log(error)
+       }
+    console.log(data);
+    res.send(data)
+    }catch(e){
+      console.log("E: "+e);
     }
-  );
+
+
+  }catch(e){
+    console.log("error retreive liked ads: " + e);
+  }
+  
 });
 
 module.exports = router;

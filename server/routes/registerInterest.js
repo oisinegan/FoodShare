@@ -1,60 +1,39 @@
 const express = require("express");
 const router = express.Router();
 const connection = require("../config/dbConfig");
+const supabase = require("../config/dbConfig");
 
-router.post("/", (req, res) => {
-  connection.connect();
-  let info = req.body;
-  // const sql =
-  //   "INSERT INTO applicants(adId, author, userInterested,userName) VALUES ('" +
-  //   info.adId +
-  //   "','" +
-  //   info.author +
-  //   "','" +
-  //   info.userInterested +
-  //   "','" +
-  //   info.userName +
-  //   "');";
+router.post("/", async(req, res) => {
+  try{
+    let info = req.body;
+    console.log(info)
+    let { data,error } = await supabase
+    .from('applicants')
+    .select('*')
+    .eq('adId', info.adId).eq('author', info.author).eq('userInterested', info.userInterested);
 
-  // connection.query(sql, (err, rows, fields) => {
-  //   if (err) throw err;
-  //   res.send(true);
-  // });
-  //SELECT * FROM applicants WHERE adId = 1 AND author = 2 AND userInterested = 1;
-  connection.query(
-    "SELECT * FROM applicants WHERE adId = " +
-      info.adId +
-      " AND author = " +
-      info.author +
-      " AND userInterested = " +
-      info.userInterested +
-      ";",
-    async (err, rows, fields) => {
-      if (err) throw err;
-
-      if (rows[0] != undefined) {
-        res.send(true);
-        console.log("EXISTS");
-      } else {
-        const sql =
-          "INSERT INTO applicants(adId, author, userInterested) VALUES ('" +
-          info.adId +
-          "','" +
-          info.author +
-          "','" +
-          info.userInterested +
-          "');";
-
-        connection.query(sql, (err, rows, fields) => {
-          if (err) throw err;
-          res.send(true);
-        });
-      }
+    if (error) {
+      console.log("error : "+error)
     }
-  );
-  console.log(info);
-  console.log(info.adId);
-  console.log(info.author);
+
+    if(data.length>0){
+      console.log("Interest exists")
+      return res.send(true);
+    }
+
+    let {err} = await supabase.from('applicants').insert([{adId:info.adId, author:info.author, userInterested: info.userInterested}]);
+      if (err) throw err;
+      console.log("SUCCESS")
+      return res.send(true);
+
+  }catch(error){
+    console.log("Error"+ error);
+    res.send(false)
+  }
+
+
+
+
 });
 
 module.exports = router;

@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const connection = require("../config/dbConfig");
+
+
 const bycrpt = require("bcrypt");
 
 const { Storage } = require("@google-cloud/storage");
 const multer = require("multer");
 const fs = require("fs");
+const supabase = require("../config/dbConfig");
 
 const memoryStorage = multer({
   storage: multer.memoryStorage(),
@@ -22,9 +24,6 @@ const storage = new Storage({
 });
 
 const bucket = storage.bucket(process.env.BUCKET);
-
-router.post("/", memoryStorage.single("image"), (req, res) => {
-  connection.connect();
 
   //Get date and time posted
   const date = Date();
@@ -45,7 +44,8 @@ router.post("/", memoryStorage.single("image"), (req, res) => {
     ":" +
     new_date.getSeconds();
 
-  try {
+router.post("/", memoryStorage.single("image"), async(req, res) => {
+  try{
     console.log(req.file);
     console.log(req.body);
 
@@ -60,56 +60,64 @@ router.post("/", memoryStorage.single("image"), (req, res) => {
     const file = bucket.file(originalname);
     const stream = file.createWriteStream();
 
-    stream.on("finish", () => {
+    stream.on("finish",async () => {
       console.log("SUCCESS - NOW SENDING INFO TO DB");
       const publicUrl =
         "https://storage.googleapis.com/" + bucket.name + "/" + originalname;
       console.log(publicUrl);
-
       try {
-        const sql =
-          "INSERT INTO ads (`item`, `image_url`, `brand`, `userId`, `expiryDate`,`size`, `measurementType`,`quant`, `extraInfo`,`datePosted`, `timePosted`,`postTo`, `long`,`lat`) VALUES ('" +
-          info.foodName +
-          "', '" +
-          publicUrl +
-          "', '" +
-          info.brand +
-          "', '" +
-          info.userId +
-          "', '" +
-          info.expiryDate +
-          "', '" +
-          info.size +
-          "', '" +
-          info.measurementType +
-          "', '" +
-          info.quant +
-          "', '" +
-          info.extraInfo +
-          "', '" +
-          datePosted +
-          "', '" +
-          timePosted +
-          "', '" +
-          info.postTo +
-          "', '" +
-          info.long +
-          "', '" +
-          info.lat +
-          "')";
-        connection.query(sql, (err, rows, fields) => {
-          if (err) throw err;
-          res.send(true);
-        });
-      } catch (e) {
-        console.log("ERROR WRITING TO DB: " + e);
-      }
-    });
-    stream.end(fileBuffer);
-  } catch (error) {
-    console.log("ERROR: " + err);
-    res.status(500).send("Error");
+
+      let {data,error} = await supabase.from('ads').insert([{
+        item: info.foodName,
+        image_url: publicUrl,
+     
+        brand:info.brand,
+          
+        userId:info.userId,
+         
+        expiryDate:info.expiryDate,
+        
+        size:info.size,
+      
+        measurementType:info.measurementType,
+   
+        quant:info.quant,
+   
+        extraInfo: info.extraInfo,
+  
+        datePosted: datePosted,
+   
+        timePosted: timePosted,
+     
+        postTo: info.postTo,
+  
+        long: info.long,
+
+        lat:  info.lat
+      }]);
+
+      if(error){
+        console.log("Error writing to DB: "+ error.message);
+      }else{
+        console.log("success");
+        res.send(true);
+      }}
+   
+  catch (e) {
+    console.log("ERROR WRITING TO DB: " + e);
   }
 });
+stream.end(fileBuffer);
+} catch (error) {
+console.log("ERROR: " + err);
+}
+});
+
+
+
+
+
+
+
 
 module.exports = router;

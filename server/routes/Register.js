@@ -1,38 +1,26 @@
 const express = require("express");
 const router = express.Router();
-const connection = require("../config/dbConfig");
+const supabase = require("../config/dbConfig");
 const bycrpt = require("bcrypt");
 
-router.post("/", (req, res) => {
-  connection.connect();
+router.post("/", async(req, res) => {
+  
   let info = req.body;
+  let { data,error } = await supabase
+    .from('User')
+    .select('email')
+    .eq('email', info.email);
 
-  connection.query(
-    "SELECT * FROM User WHERE email = '" + info.email + "'",
-    async (err, rows, fields) => {
-      if (err) throw err;
+    if (error) throw error;
 
-      if (rows[0] != undefined) {
-        res.send(false);
-      } else {
-        const hashedPassword = await bycrpt.hash(info.password, 10);
-
-        const sql =
-          "INSERT INTO User (`name`, `email`, `pass`) VALUES ('" +
-          info.name +
-          "', '" +
-          info.email +
-          "', '" +
-          hashedPassword +
-          "')";
-        connection.query(sql, (err, rows, fields) => {
-          if (err) throw err;
-
-          res.send(true);
-        });
-      }
+    if(data.length>0){
+      res.send(false);
+    }else{
+      const hashedPassword = await bycrpt.hash(info.password, 10);
+      let {error} = await supabase.from('User').insert([{name:info.name, email:info.email, pass: hashedPassword}]);
+      if (error) throw error;
+      res.send(true);
     }
-  );
 });
 
 module.exports = router;

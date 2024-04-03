@@ -1,26 +1,37 @@
 const bycrpt = require("bcrypt");
 const passportLocal = require("passport-local").Strategy;
-const connection = require("./config/dbConfig");
+
+const supabase = require("./config/dbConfig");
+
 
 module.exports = function (passport) {
+  console.log("PASSPORT CONFIG FILE");
   passport.use(
     new passportLocal((email, pass, done) => {
-      const sql = "SELECT * FROM User WHERE email = '" + email + "'";
-      console.log("HERE");
-      connection.query(sql, (err, rows, fields) => {
-        if (err) throw done(err);
-        if (rows.length === 0) return done(null, false);
-        console.log("ROWS:::::" + rows[0].pass);
-        bycrpt.compare(pass, rows[0].pass, (err, result) => {
+      console.log(email.toLowerCase())
+      supabase.from('User').select('*').eq('email',email.toLowerCase()).single().then(({data,error}) =>{
+        if(error){
+          console.log("Supabase error"+ error.message)
+          return done(error);
+        }
+        if(!data){
+          return done(null,false)
+        }
+        console.log("Data from Supabase:", data); // Log the data
+        bycrpt.compare(pass, data.pass, (err, result) => {
           if (err) throw done(err);
           if (result === true) {
-            return done(null, rows[0]);
+            return done(null, data);
           } else {
             return done(null, false);
           }
         });
-      });
-    })
+      }).catch(error=>done(error));
+        
+      })
+    
+     
+    
   );
 
   passport.serializeUser((user, cb) => {
@@ -30,23 +41,24 @@ module.exports = function (passport) {
 
   passport.deserializeUser((id, done) => {
     console.log("DESERIALIZING");
-    const sql = "SELECT * FROM User WHERE id = '" + id + "'";
-    connection.query(sql, (err, rows, fields) => {
-      if (err) {
-        console.log("Error fetching user data:", err);
-        return done(err); // Pass the error to the done callback
+    supabase.from('User').select('*').eq('id',id).single().then(({data,error}) =>{
+      if (error) {
+        console.log("Error fetching user data:", error);
+        return done(error); // Pass the error to the done callback
       }
-      if (rows.length === 0) {
+      if (data.length === 0) {
         console.error("User not found in database");
         return done(null, false); // User not found
       }
       const userInfo = {
-        id: rows[0].id,
-        name: rows[0].name,
-        email: rows[0].email,
+        id: data.id,
+        name: data.name,
+        email: data.email,
       };
       console.log("User info (PP config):", JSON.stringify(userInfo));
       done(null, userInfo);
-    });
+    }).catch(error => done(error));
+    
+    
   });
 };

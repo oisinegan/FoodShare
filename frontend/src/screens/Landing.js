@@ -391,14 +391,13 @@ const updateSearch = (search) => {
       });
 
       const result = await response.json();
-      if (!result) {
-       
-     
-        Alert.alert("ERROR", "ERR");
+      if (result) {
+    
+        console.log("register Interest")
       }
     } catch (e) {
-      "GET ERROR: " + e;
-      Alert.alert("ERROR", "ERROR: "+ e);
+      console.log("ERROR.... "+ e)
+      Alert.alert("ERROR:::::", e);
     }
   };
 
@@ -479,7 +478,8 @@ const updateSearch = (search) => {
 
   const fetchAllItems = async () => {
     try {
-      
+      console.log("Fetching....")
+      console.log(ip+"/getAllItems")
       const response = await fetch(ip+"/getAllItems", {
         method: "post",
         body: JSON.stringify(user),
@@ -495,14 +495,12 @@ const updateSearch = (search) => {
           (item) => Object.keys(item).length !== 0
         );
 
-        /******** UPDATE FETCH TO NOT SEND USERS OWN ADS **************/
-        user;
-        // const removeUserAds = filteredRes.filter(
-        //   (item) => item.userId !== user.id
-        // );
+        console.log("filtered: " + filteredRes.image)
 
         setItems(filteredRes);
+        console.log(filteredRes);
       } else {
+        console.log("ERROR getting items")
         Alert.alert("ERROR", "ERR");
       }
     } catch (e) {

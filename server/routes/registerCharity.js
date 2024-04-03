@@ -1,30 +1,33 @@
 const express = require("express");
 const router = express.Router();
-const connection = require("../config/dbConfig");
+const supabase = require("../config/dbConfig");
 
-router.post("/", (req, res) => {
-  connection.connect();
-  let info = req.body;
-  console.log(info)
-        const sql =
-          "INSERT INTO Charity (`name`, `long`, `lat`, `website`, `number`, `user`) VALUES ('" +
-          info.name +
-          "', '" +
-          info.long +
-          "', '" +
-          info.lat +
-          "', '" +
-          info.web +
-          "', '" +
-          info.phone +
-          "', '" +
-          info.userId +
-          "')";
-        connection.query(sql, (err, rows, fields) => {
-          if (err) throw err;
+router.post("/", async(req, res) => {
 
-          res.send(true);
-        });
+  try {
+    let info = req.body;
+    console.log(info)
+    let {error} = await supabase.from('Charity').insert([{
+      name: info.name,
+      long: info.long,
+      lat: info.lat,
+      website: info.web,
+      number: info.phone,
+      user:info.userId,
+    }]);
+
+    if(error){
+      console.log("Error writing to DB: "+ error.message);
+    }else{
+      console.log("success registering charity");
+      res.send(true);
+    }
+  }
+ 
+catch (e) {
+  console.log("ERROR WRITING TO DB: " + e);
+}
+
       
 });
 

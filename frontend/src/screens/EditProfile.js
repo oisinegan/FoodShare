@@ -154,12 +154,14 @@ function EditProfile({ route, navigation }) {
         </View>
         <TextInput
           placeholder="Name"
+          editable={false}
           style={styles.innerInfo}
           value={info.name}
           onChangeText={(val) => handleChange("name", val)}
         />
         <TextInput
           placeholder="Email"
+          editable={false}
           value={info.email}
           style={styles.innerInfo}
           onChangeText={(val) => handleChange("email", val)}

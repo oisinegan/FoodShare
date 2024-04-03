@@ -38,7 +38,7 @@ function ChannelScreen({ route, navigation }) {
   const [user, setUser] = useContext(Context);
   //console.log(channel)
   console.log(channel.state.members.name)
-  const ip = 'http://172.20.10.2:8000';
+ const ip = 'http://192.168.1.8:8000';
 
   if(channel){
     for(const member in channel.state.members){
@@ -134,6 +134,7 @@ function ChannelScreen({ route, navigation }) {
         userN: user.name
       };
       try {
+        console.log("CALLING COMPLETE SHARE")
         const response = await fetch(ip+"/completeShare", {
           method: "post",
           body: JSON.stringify(request),
@@ -141,8 +142,10 @@ function ChannelScreen({ route, navigation }) {
             "Content-Type": "application/json",
           },
         });
-  
+
         const result = await response.json();
+        console.log("CS RES: ");
+        console.log(result);
         if (result) {
           console.log(result)
           console.log("Writen to completed Share")
@@ -154,15 +157,11 @@ function ChannelScreen({ route, navigation }) {
         console.log("FETCH ERROR: " + e);
         Alert.alert("ERROR", "ERROR");
       }
-      //Write to completed share db - done
-      //Remove from ads db - done
-      //Add share points to user and other user profile - done
-      //FUTURE: (Add ad to both users activity)
-      //Delete Text channel = done
-      //Future: (Delete rest of channels that involve food item) or (Other users cant text in anymore with message saying item given away)
+      
     }
 
     const deleteAd = async () => {
+      console.log("INSIDE DELETE AD")
       try {
         const response = await fetch(ip+"/removeAd", {
           method: "post",
@@ -173,6 +172,8 @@ function ChannelScreen({ route, navigation }) {
         });
   
         const result = await response.json();
+        console.log("AFTER CALLING DELETE AD")
+        console.log(result)
         if (result) {
           console.log("DELETED")
           
@@ -194,6 +195,7 @@ function ChannelScreen({ route, navigation }) {
       };
    
       try {
+        console.log("INSISDE SHARE POINTS")
         const response = await fetch(ip+"/addSharePoints", {
           method: "post",
           body: JSON.stringify(request1),
@@ -203,6 +205,8 @@ function ChannelScreen({ route, navigation }) {
         });
   
         const result = await response.json();
+        console.log("RESULT CS: ")
+        console.log(result);
         if (result) {
           console.log("ADDED")
           Alert.alert("5 share points added to each profile 🚀")

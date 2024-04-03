@@ -66,7 +66,7 @@ function Profile({ navigation }) {
         // );
 
         /******** UPDATE FETCH TO NOT SEND USERS OWN ADS **************/
-
+        console.log(result);
         setUserInfo(result);
         console.log(result);
       } else {
@@ -223,9 +223,11 @@ function Profile({ navigation }) {
         </View>
         <View style={styles.profileImageCont}>
           <View style={styles.profileImageInnerCont}>
+            {console.log("USER INFO")}
+            {console.log(userInfo)}
             {userInfo ? (
                  <Image
-                 source={{ uri: userInfo[0].Url }}
+                 source={{ uri: userInfo[0].url }}
                  style={styles.profileImage}
                />
              

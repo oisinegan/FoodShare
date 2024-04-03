@@ -1,25 +1,27 @@
 const express = require("express");
 const router = express.Router();
-const connection = require("../config/dbConfig");
+const supabase = require("../config/dbConfig");
 
-router.post("/", (req, res) => {
-  connection.connect();
+router.post("/", async(req, res) => {
+
+  try{
+    
+  
+
   let info = req.body;
 
   console.log(info.adId);
   console.log(info.userId);
 
-  const sql =
-    "DELETE FROM applicants where adId =" +
-    info.adId +
-    " AND userInterested = " +
-    info.userId +
-    ";";
+  const { data, error } = await supabase.from('applicants').delete().eq('adId', info.adId).eq('userInterested', info.userId);
 
-  connection.query(sql, (err, rows, fields) => {
-    if (err) throw err;
-    res.send(true);
-  });
+  if(error){
+    console.log("ERROR + "+ error);
+  }
+  console.log("Unregister interest success");
+  res.send(true);
+}catch(e){console.log("ERR: "+ e)}
+
 });
 
 module.exports = router;

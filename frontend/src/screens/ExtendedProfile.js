@@ -70,12 +70,12 @@ function ExtendedProfile({ route,navigation }) {
 
         setItems(result);
       } else {
-        ("No Result");
+        console.log("No Result");
         Alert.alert("ERROR", "ERR");
       }
     } catch (e) {
       "GET ERROR: " + e;
-      Alert.alert("ERROR", "ERROR");
+      Alert.alert("ERROR", "ERROR1: "+ e);
     }
   };
 
@@ -102,7 +102,7 @@ function ExtendedProfile({ route,navigation }) {
       }
     } catch (e) {
       "GET ERROR: " + e;
-      Alert.alert("ERROR", "ERROR");
+      Alert.alert("ERROR", "ERROR: "+e);
     }
   };
 

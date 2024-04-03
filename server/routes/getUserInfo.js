@@ -1,31 +1,28 @@
 const express = require("express");
 const router = express.Router();
-const connection = require("../config/dbConfig");
+const supabase = require("../config/dbConfig");
 
-router.post("/", (req, res) => {
+router.post("/", async(req, res) => {
   let info = req.body;
-  console.log(info);
-  connection.connect();
-  console.log(info.id);
+  try {
+    let info = req.body;
+    console.log(info)
+    let {data,error} = await supabase.from('User').select('url, points')
+    .eq('id', info.user.id);
 
-  connection.query(
-    "SELECT * FROM User WHERE id= " + info.user.id + ";",
-
-    (err, rows, fields) => {
-      if (err) throw err;
-      const info = [];
-      rows.forEach((row) => {
-        const { Url, points } = row;
-        info.push({
-          Url,
-          points,
-        });
-      });
-      console.log("info");
-      console.log(info);
-      res.send(info);
+    if(error){
+      console.log("Error: "+ error.message);
+    }else{
+      console.log("userInfo");
+       
+      console.log(data);
+      res.send(data);
     }
-  );
+  }
+ 
+catch (e) {
+  console.log("ERROR: " + e);
+}
 });
 
 module.exports = router;

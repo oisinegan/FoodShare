@@ -1,26 +1,36 @@
 const express = require("express");
 const router = express.Router();
 const connection = require("../config/dbConfig");
+const supabase = require("../config/dbConfig");
 
-router.post("/", (req, res) => {
+router.post("/", async(req, res) => {
+
+  try{  
   let info = req.body;
   console.log(info);
-  connection.connect();
   console.log(info.AdId);
 
-  connection.query(
-    "DELETE FROM applicants WHERE id= " + info.AdId + ";",
-    (err, rows, fields) => {
-      if (err) throw err; 
-      connection.query(
-        "DELETE FROM ads WHERE id= " + info.AdId + ";",
-        (err, rows, fields) => {
-          if (err) throw err; 
-          res.send(true);
-        }
-      );
-    }
-  );
+  const { error } = await supabase
+  .from('applicants')
+  .delete()
+  .eq('id', info.AdId);
+
+  if(error) throw error;
+
+  const { err } = await supabase
+  .from('ads')
+  .delete()
+  .eq('id', info.AdId);
+
+  if(err) throw err;
+
+  console.log("Detleted ad from ads and applicants");
+  res.send(true);
+
+  }catch(e){
+    console.log("e: "+ e);
+  }
+
 });
 
 module.exports = router;

@@ -8,6 +8,14 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+const supabase = require('@supabase/supabase-js');
+const { createClient } = require('@supabase/supabase-js');
+const connectionString = process.env.DATABASE_URL
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  connectionString: connectionString
+})
 
 app.use(
   cors({
@@ -20,6 +28,8 @@ app.use(
       "https://localhost:3000",
       "http://10.9.10.25:8081",
       "http://172.20.10.2:8081",
+      "http://172.20.10.2:8080",
+      "http://172.20.10.2:8000",
     ],
     credentials: true,
   })
@@ -35,6 +45,9 @@ app.use(
     },
   })
 );
+
+console.log(connectionString)
+
 
 app.use(passport.initialize());
 app.use(passport.session());

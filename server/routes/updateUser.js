@@ -6,6 +6,7 @@ const bycrpt = require("bcrypt");
 const { Storage } = require("@google-cloud/storage");
 const multer = require("multer");
 const fs = require("fs");
+const supabase = require("../config/dbConfig");
 
 const memoryStorage = multer({
   storage: multer.memoryStorage(),
@@ -22,9 +23,6 @@ const storage = new Storage({
 });
 
 const bucket = storage.bucket(process.env.BUCKET);
-
-router.post("/", memoryStorage.single("image"), (req, res) => {
-  connection.connect();
 
   //Get date and time posted
   const date = Date();
@@ -45,6 +43,11 @@ router.post("/", memoryStorage.single("image"), (req, res) => {
     ":" +
     new_date.getSeconds();
 
+router.post("/", memoryStorage.single("image"), async(req, res) => {
+
+
+
+
   try {
     console.log(req.file);
     console.log(req.body);
@@ -60,40 +63,26 @@ router.post("/", memoryStorage.single("image"), (req, res) => {
     const file = bucket.file(originalname);
     const stream = file.createWriteStream();
 
-    stream.on("finish", () => {
+    stream.on("finish", async() => {
       console.log("SUCCESS - NOW SENDING INFO TO DB");
       const publicUrl =
         "https://storage.googleapis.com/" + bucket.name + "/" + originalname;
       console.log(publicUrl);
       console.log(info);
-      try {
-        const sql =
-          "UPDATE User set email='" +
-          info.email +
-          "', name= '" +
-          info.name +
-          "', Url='" +
-          publicUrl +
-          "', long=" +
-          info.long +
-          ", lat=" +
-          info.lat +
-          " where id=" +
-          info.userId +
-          " ;";
 
-        connection.query(sql, (err, rows, fields) => {
-          if (err) throw err;
-          //   res.send(true);
-        });
-      } catch (e) {
-        console.log("ERROR WRITING TO DB: " + e);
-      }
+    try{
+      const {data,error} = await supabase.from('User').update({url:publicUrl}).eq('id',info.userId);
+      if(error) throw error;
+      console.log("Success updating profile pic");
+   
+    }catch(e){
+      console.log("Error111: "+ e);
+    }
     });
     stream.end(fileBuffer);
     res.send(true);
   } catch (error) {
-    console.log("ERROR: " + err);
+    console.log("ERROR11: " + err);
     res.status(500).send("Error");
   }
 });

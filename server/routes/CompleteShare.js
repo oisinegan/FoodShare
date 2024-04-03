@@ -2,60 +2,52 @@ const express = require("express");
 const router = express.Router();
 const connection = require("../config/dbConfig");
 const bycrpt = require("bcrypt");
+const supabase = require("../config/dbConfig");
 
-router.post("/", (req, res) => {
-  connection.connect();
+router.post("/", async(req, res) => {
+try{
   let info = req.body;
-  console.log(info)
+  console.log("info")
+  console.log(info.AdId)
+  const { data, error } = await supabase.from('ads').select('*').eq('id', info.AdId).single();
+  
+  if(error){
+    console.log("ERROR1: "+ error.message);
+  }
+  if(!data){
+    console.log("No ads founds1")
+  }
+  console.log(data)
 
-        const sql =
-          "SELECT * FROM ads where id = '" +
-          info.AdId +
-          "';";
-        connection.query(sql, (err, rows, fields) => {
-          if (err) throw err;
-          console.log(rows[0]);
-          const sql2 =
-          "INSERT INTO CompletedShares (`user`, `otherUser`, `AdId`,  `item`, `image_url`, `brand`, `expiryDate`, `size`, `measurementType`, `quant`, `extraInfo`, `datePosted`, `timePosted`, `postTo`, `long`, `lat`) VALUES ('" +
-          info.userN +
-          "', '" +
-          info.otherUser +
-          "', '" +
-          info.AdId +
-          "', '" +
-          rows[0].item +
-          "', '" +
-          rows[0].image_url +
-          "', '" +
-          rows[0].brand +
-          "', '" +
-          rows[0].expiryDate +
-          "', '" +
-          rows[0].size +
-          "', '" +
-          rows[0].measurementType +
-          "', '" +
-          rows[0].quant +
-          "', '" +
-          rows[0].extraInfo +
-          "', '" +
-          rows[0].datePosted +
-          "', '" +
-          rows[0].timePosted +
-          "', '" +
-          rows[0].postTo +
-          "', '" +
-          rows[0].long +
-          "', '" +
-          rows[0].lat +
-          "')";
-          connection.query(sql2, (err, rows, fields) => {
-            if (err) throw err;
-            res.send(true);
-          });
-          
-        });
-      
+  let {err} = await supabase.from('CompletedShares').insert([{
+    user: info.userN,
+    otherUser: info.otherUser,
+    AdId:info.AdId,
+    item: data.item ,
+    image_url: data.image_url,
+    brand:  data.brand,
+    expiryDate: data.expiryDate,
+    size:  data.size,
+    measurementType:  data.measurementType,
+    quant:  data.quant,
+    extraInfo:    data.extraInfo,
+    datePosted:  data.datePosted,
+    timePosted:  data.timePosted,
+    postTo:  data.postTo,
+    long:  data.long,
+    lat: data.lat
+  }]);
+
+  if(err){
+    console.log("Error writing to DB1: "+ err.message);
+  }else{
+    console.log("success completing share");
+    res.send(true);
+  }
+
+}catch(e){
+  console.log("e1: "+ e);
+}
   
 });
 
