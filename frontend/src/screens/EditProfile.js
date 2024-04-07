@@ -33,7 +33,7 @@ function EditProfile({ route, navigation }) {
   const userInfo = params;
   console.log("USER LOG");
   console.log(userInfo);
-  const ip = 'http://192.168.1.8:8000';
+  const ip = "http://192.168.1.8:8000";
 
   const [info, setInfo] = useState({
     userId: user.id,
@@ -76,7 +76,7 @@ function EditProfile({ route, navigation }) {
       data.append("long", long);
       data.append("lat", lat);
 
-      const response = await fetch(ip+"/updateUser", {
+      const response = await fetch(ip + "/updateUser", {
         method: "post",
         body: data,
       });
@@ -84,7 +84,6 @@ function EditProfile({ route, navigation }) {
       const result = await response.json();
 
       if (result) {
-        
         navigation.navigate("Profile");
       } else {
         Alert.alert("ERROR", "ERR");
@@ -144,7 +143,7 @@ function EditProfile({ route, navigation }) {
         <View style={styles.imageOuterCon}>
           <TouchableOpacity style={styles.imageCon} onPress={pickImage}>
             {image ? (
-              <Image source={ image } style={styles.image} />
+              <Image source={image} style={styles.image} />
             ) : (
               <Image source={noPic} style={styles.image}></Image>
             )}

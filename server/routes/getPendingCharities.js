@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const connection = require("../config/dbConfig");
+
 const supabase = require("../config/dbConfig");
 
 router.get("/", async (req, res) => {
+  console.log("GETTING PENDING CHARITIES");
   try {
-    const { data, error } = await supabase.from("Charity").select("*");
+    const { data, error } = await supabase.from("PendingCharity").select("*");
 
     if (error) {
       console.log("ERROR: " + error);

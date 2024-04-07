@@ -7,7 +7,7 @@ router.post("/", async(req, res) => {
   try {
     let info = req.body;
     console.log(info)
-    let {error} = await supabase.from('Charity').insert([{
+    let {error} = await supabase.from('PendingCharity').insert([{
       name: info.name,
       long: info.long,
       lat: info.lat,

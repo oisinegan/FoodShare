@@ -28,124 +28,92 @@ import {
 import { AppProvider } from "../../AppContext";
 import { useAppContext } from "../../AppContext";
 import { ChannelList } from "stream-chat-expo";
+import { ResizeMode } from "expo-av";
 
-
-
-
-
-function Messages({navigation }) {
-
+function Messages({ navigation }) {
   const [user, setUser] = useContext(Context);
   const chatClient = StreamChat.getInstance(chatApiKey);
-  console.log("IS CONNECTED: " + chatClient.wsConnection.connectionID)
-  // console.log(chatClient.user.name);
-  // console.log(chatClient.wsConnection.isHealthy.toString());
+  console.log("IS CONNECTED: " + chatClient.wsConnection.connectionID);
 
   const filters = {
     members: {
       $in: [user.name],
-      //$in: [chatClient.user.name],
     },
   };
-  
+
   const sort = {
     last_message_at: -1,
   };
 
-// Using async function to use 'await'
-const fetchData = async () => {
-  console.log("CALLED");
-  
-};
-
-
-
   const { setChannel } = useAppContext();
   const [clientIsReady, setClientIsReady] = useState(false);
 
-
   const setupClient = async () => {
- 
-
-
     try {
-      console.log("WAITING 1")
+      console.log("WAITING 1");
       const chatClient = StreamChat.getInstance(chatApiKey);
-     // await chatClient.disconnectUser();
+      // await chatClient.disconnectUser();
 
       await chatClient.connectUser(
-          {
-              id: user.name,
-              name: user.name,
-              //image: 'https://getstream.io/random_svg/?name=John',
-          },
-          chatClient.devToken(user.name),
+        {
+          id: user.name,
+          name: user.name,
+          //image: 'https://getstream.io/random_svg/?name=John',
+        },
+        chatClient.devToken(user.name)
       );
-       
-        console.log('Connected User ID from set up client:', chatClient.user.id);
-     
 
-        // Call the async function
-        try {
-          const channels = await chatClient.queryChannels(filters, sort );
-          // console.log("Channels:", channels);
+      console.log("Connected User ID from set up client:", chatClient.user.id);
 
+      // Call the async function
+      try {
+        const channels = await chatClient.queryChannels(filters, sort);
+        // console.log("Channels:", channels);
 
-        console.log("IS CLIENT READY - "+ clientIsReady)
-        setClientIsReady(true)
-        console.log("IS CLIENT READY - "+ clientIsReady)
-         // console.log("Channels not filter:", channelsNoFilter);
-        } catch (error) {
-          console.error("Error fetching channels:", error);
-        }
-        
-        
-        // connectUser is an async function. So you can choose to await for it or not depending on your use case (e.g. to show custom loading indicator)
-        // But in case you need the chat to load from offline storage first then you should render chat components
-        // immediately after calling `connectUser()`.
-        // BUT ITS NECESSARY TO CALL connectUser FIRST IN ANY CASE.
+        console.log("IS CLIENT READY - " + clientIsReady);
+        setClientIsReady(true);
+        console.log("IS CLIENT READY - " + clientIsReady);
+        // console.log("Channels not filter:", channelsNoFilter);
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`An error occurred while connecting the user: ${error.message}`);
-        }
+        console.error("Error fetching channels:", error);
       }
-    
-    };
-    setupClient();
-
-// console.log("IS CLIENt ready: "+ clientIsReady);
-// console.log("CNAME: "+ chatClient.user.name)
-if(clientIsReady){
-  return (
-
-    <SafeAreaView style={styles.container}>
-      
-      {/* <Text>{chatClient.user.name}</Text>
-      <Text> isDisconnected: {chatClient.wsConnection.isDisconnected.toString()}</Text>
-      <Text> isHealthy: {chatClient.wsConnection.isHealthy.toString()}</Text> */}
-
-     <ChannelList
-        styles={{ marginTopTop: 4000 }}
-        filters={(filters)}
-        sort={sort}
-        onSelect={(channel) => {
-          setChannel(channel);
-          navigation.navigate("ChannelScreen",{ channel: channel });
-        }}
-     />
-     
-
-      <Nav />
-    </SafeAreaView>
-  );
-      }else{
-        return (
-          <SafeAreaView style={styles.container}>
-            <Text>false</Text>
-            <Nav />
-          </SafeAreaView>
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(
+          `An error occurred while connecting the user: ${error.message}`
         );
       }
+    }
+  };
+  setupClient();
+
+  if (clientIsReady) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ChannelList
+          styles={{ marginTopTop: 4000 }}
+          filters={filters}
+          sort={sort}
+          onSelect={(channel) => {
+            console.log("CHANNEL SELETEDL: ");
+            console.log(channel);
+            console.log("************************************************");
+            setChannel(channel);
+            navigation.navigate("ChannelScreen", { channel: channel });
+          }}
+        />
+
+        <Nav />
+      </SafeAreaView>
+    );
+  } else {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text>false</Text>
+        <Nav />
+      </SafeAreaView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({

@@ -24,26 +24,24 @@ import Nav from "../components/Nav";
 function Login({ navigation }) {
   const [info, setInfo] = useState([{}]);
   const [user, setUser] = useContext(Context);
-  const ip = 'http://192.168.1.8:8000';
+  const ip = "http://192.168.1.8:8000";
 
   const handleChange = (name, val) => {
     setInfo((prev) => {
       return { ...prev, [name]: val.trim() };
     });
-    (info);
+    info;
   };
-
-
 
   const handleSubmit = async () => {
     if (!info.username || !info.password) {
-      (info);
+      info;
       Alert.alert("ERROR", "Fill in all fields!");
       return;
     }
 
     try {
-      const response = await fetch(ip+"/Login", {
+      const response = await fetch(ip + "/Login", {
         method: "post",
         body: JSON.stringify(info),
         headers: {
@@ -52,16 +50,14 @@ function Login({ navigation }) {
       });
 
       const result = await response.json();
-      (result);
+      result;
       if (result.user) {
-       
-
         try {
           await AsyncStorage.setItem("token", result.user);
           const decoded = decodeToken(result.user);
           setUser(decoded);
         } catch (error) {
-          ("Error logging in: " + error);
+          "Error logging in: " + error;
         }
 
         navigation.navigate("Landing");
@@ -69,12 +65,10 @@ function Login({ navigation }) {
         Alert.alert("ERROR", "Wrong user or pass");
       }
     } catch (e) {
-      ("FETCH ERROR: " + e);
+      "FETCH ERROR: " + e;
       Alert.alert("ERROR", "ERROR");
     }
   };
-
-  
 
   return (
     <SafeAreaView>
@@ -82,41 +76,38 @@ function Login({ navigation }) {
         <Text style={styles.title}>Login</Text>
         <View style={styles.innerContainer}>
           <View style={styles.conBorder}>
+            <TextInput
+              placeholder="Email"
+              style={styles.input}
+              onChangeText={(val) => handleChange("username", val)}
+            />
+            <TextInput
+              secureTextEntry={true}
+              placeholder="Password"
+              style={styles.input}
+              onChangeText={(val) => handleChange("password", val)}
+            />
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                <Text style={styles.text}>Login</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={{ fontSize: 20 }}>
+              Don't have an account?{" "}
+              <Text
+                style={{
+                  textDecorationLine: "underline",
+                  color: "rgba(10, 10, 50.2, 0.8)",
 
-          
-          <TextInput
-            placeholder="Email"
-            style={styles.input}
-            onChangeText={(val) => handleChange("username", val)}
-          />
-          <TextInput
-            secureTextEntry={true}
-            placeholder="Password"
-            style={styles.input}
-            onChangeText={(val) => handleChange("password", val)}
-          />
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-              <Text style={styles.text}>Login</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={{ fontSize: 20 }}>
-            Don't have an account?{" "}
-            <Text
-              style={{
-                textDecorationLine: "underline",
-                color: "rgba(10, 10, 50.2, 0.8)",
-
-                fontSize: 20,
-              }}
-              onPress={() => navigation.navigate("Register")}
-            >
-              Register
+                  fontSize: 20,
+                }}
+                onPress={() => navigation.navigate("Register")}
+              >
+                Register
+              </Text>
             </Text>
-          </Text>
+          </View>
         </View>
-        </View>
-        
       </View>
       <Nav />
     </SafeAreaView>
@@ -127,22 +118,21 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fafaf9",
     height: "94.5%",
-    justifyContent:"center",
-    alignItems:"center",
-    paddingTop:"25%"
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: "25%",
   },
   innerContainer: {
     flex: 1,
     width: "90%",
   },
-  conBorder:{
-    borderWidth:1,
-    borderColor:"grey",
-    borderRadius:25,
-    padding:15,
+  conBorder: {
+    borderWidth: 1,
+    borderColor: "grey",
+    borderRadius: 25,
+    padding: 15,
   },
   buttonContainer: {
- 
     justifyContent: "center",
     alignItems: "center",
   },
@@ -167,7 +157,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     elevation: 3,
     backgroundColor: "black",
-    marginBottom:25,
+    marginBottom: 25,
   },
   text: {
     fontSize: 16,
@@ -175,7 +165,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     letterSpacing: 0.25,
     color: "white",
-   
   },
 });
 

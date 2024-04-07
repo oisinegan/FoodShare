@@ -19,13 +19,13 @@ import Nav from "../components/Nav";
 
 function Register({ navigation }) {
   const [info, setInfo] = useState([{}]);
-  const ip = 'http://192.168.1.8:8000';
+  const ip = "http://192.168.1.8:8000";
 
   const handleChange = (name, val) => {
     setInfo((prev) => {
       return { ...prev, [name]: val.trim() };
     });
-    (info);
+    info;
   };
 
   const handleSubmit = async () => {
@@ -34,9 +34,19 @@ function Register({ navigation }) {
       return;
     }
 
+    if (info.name.indexOf(" ") !== -1) {
+      Alert.alert("ERROR", "The username cannot contain spaces!");
+      return;
+    }
+
+    if (info.name.indexOf("_") !== -1) {
+      Alert.alert("ERROR", "The username cannot have an underscore!");
+      return;
+    }
+
     try {
-      info.email = info.email.toString().toLowerCase()
-      const response = await fetch(ip+"/Register", {
+      info.email = info.email.toString().toLowerCase();
+      const response = await fetch(ip + "/Register", {
         method: "post",
         body: JSON.stringify(info),
         headers: {
@@ -46,13 +56,12 @@ function Register({ navigation }) {
 
       const result = await response.json();
       if (result) {
-       
         navigation.navigate("Login");
       } else {
         Alert.alert("ERROR", "ERROR: USER ALREADY EXISTS");
       }
     } catch (e) {
-      ("FETCH ERROR: " + e);
+      "FETCH ERROR: " + e;
       Alert.alert("ERROR", "ERROR");
     }
   };
@@ -62,49 +71,48 @@ function Register({ navigation }) {
       <View style={styles.container}>
         <Text style={styles.title}>Register</Text>
         <View style={styles.innerContainer}>
-        <View style={styles.conBorder}>
-          <TextInput
-            name="name"
-            placeholder="Name"
-            style={styles.input}
-            onChangeText={(val) => handleChange("name", val)}
-          />
-          <TextInput
-            name="email"
-            placeholder="Email"
-            style={styles.input}
-            onChangeText={(val) => handleChange("email", val)}
-          />
+          <View style={styles.conBorder}>
+            <TextInput
+              name="name"
+              placeholder="Name"
+              style={styles.input}
+              onChangeText={(val) => handleChange("name", val)}
+            />
+            <TextInput
+              name="email"
+              placeholder="Email"
+              style={styles.input}
+              onChangeText={(val) => handleChange("email", val)}
+            />
 
-          <TextInput
-            secureTextEntry={true}
-            placeholder="Password"
-            name="password"
-            style={styles.input}
-            onChangeText={(val) => handleChange("password", val)}
-          />
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-              <Text style={styles.text}>Register</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={{ fontSize: 20 }}>
-            Already have an account?{" "}
-            <Text
-              style={{
-                textDecorationLine: "underline",
-                color: "rgba(10, 10, 50.2, 0.8)",
+            <TextInput
+              secureTextEntry={true}
+              placeholder="Password"
+              name="password"
+              style={styles.input}
+              onChangeText={(val) => handleChange("password", val)}
+            />
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                <Text style={styles.text}>Register</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={{ fontSize: 20 }}>
+              Already have an account?{" "}
+              <Text
+                style={{
+                  textDecorationLine: "underline",
+                  color: "rgba(10, 10, 50.2, 0.8)",
 
-                fontSize: 20,
-              }}
-              onPress={() => navigation.navigate("Login")}
-            >
-              Login
+                  fontSize: 20,
+                }}
+                onPress={() => navigation.navigate("Login")}
+              >
+                Login
+              </Text>
             </Text>
-          </Text>
+          </View>
         </View>
-        </View>
-        
       </View>
       <Nav />
     </SafeAreaView>
@@ -115,22 +123,21 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fafaf9",
     height: "94.5%",
-    justifyContent:"center",
-    alignItems:"center",
-    paddingTop:"25%"
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: "25%",
   },
   innerContainer: {
     flex: 1,
     width: "90%",
   },
-  conBorder:{
-    borderWidth:1,
-    borderColor:"grey",
-    borderRadius:25,
-    padding:15,
+  conBorder: {
+    borderWidth: 1,
+    borderColor: "grey",
+    borderRadius: 25,
+    padding: 15,
   },
   buttonContainer: {
-  
     justifyContent: "center",
     alignItems: "center",
   },
@@ -155,7 +162,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     elevation: 3,
     backgroundColor: "black",
-    marginBottom:25,
+    marginBottom: 25,
   },
   text: {
     fontSize: 16,

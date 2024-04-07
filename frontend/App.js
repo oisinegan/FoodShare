@@ -14,9 +14,11 @@ import EditProfile from "./src/screens/EditProfile";
 import ExtendedProfile from "./src/screens/ExtendedProfile";
 import Messages from "./src/screens/Messages";
 import ChannelScreen from "./src/screens/ChannelScreen"
-
+import ReviewCharity from "./src/screens/ReviewCharity"
+import * as Location from "expo-location";
 const Stack = createNativeStackNavigator();
 export const Context = React.createContext();
+export const LocationContext = React.createContext();
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { decodeToken } from "react-jwt";
@@ -32,8 +34,10 @@ const chatClient = StreamChat.getInstance(chatApiKey);
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [loc, setLoc] = useState(null);
   useEffect(() => {
     checkIfTokenExists();
+    getUserLoc();
   }, []);
 
   const checkIfTokenExists = async () => {
@@ -51,6 +55,19 @@ export default function App() {
       console.log("ERROR checking token: " + e);
     }
   };
+
+  const getUserLoc = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permission to access location was denied");
+      return;
+    }
+    console.log("LOCATION")
+    let location = await Location.getCurrentPositionAsync({});
+    console.log(location)
+    setLoc(location);
+
+  };
   //
   return (
     <AppProvider>
@@ -59,6 +76,7 @@ export default function App() {
           <OverlayProvider>
           <Chat client={chatClient}>
       <Context.Provider value={[user, setUser]}>
+      <LocationContext.Provider value={[loc, setLoc]}>
         <Stack.Navigator>
           <Stack.Screen
             name="Landing"
@@ -116,7 +134,13 @@ export default function App() {
             component={ChannelScreen}
             options={{ headerShown: false }}
           />
+           <Stack.Screen
+            name="ReviewCharity"
+            component={ReviewCharity}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
+      </LocationContext.Provider>
       </Context.Provider>
       </Chat>
       </OverlayProvider>

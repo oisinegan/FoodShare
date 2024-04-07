@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-
 const bycrpt = require("bcrypt");
 
 const { Storage } = require("@google-cloud/storage");
@@ -25,27 +24,27 @@ const storage = new Storage({
 
 const bucket = storage.bucket(process.env.BUCKET);
 
-  //Get date and time posted
-  const date = Date();
-  const new_date = new Date(date);
+//Get date and time posted
+const date = Date();
+const new_date = new Date(date);
 
-  const datePosted =
-    new_date.getDate() +
-    "-" +
-    new_date.getMonth() +
-    1 +
-    "-" +
-    new_date.getFullYear();
+const datePosted =
+  new_date.getDate() +
+  "-" +
+  new_date.getMonth() +
+  1 +
+  "-" +
+  new_date.getFullYear();
 
-  const timePosted =
-    new_date.getHours() +
-    ":" +
-    new_date.getMinutes() +
-    ":" +
-    new_date.getSeconds();
+const timePosted =
+  new_date.getHours() +
+  ":" +
+  new_date.getMinutes() +
+  ":" +
+  new_date.getSeconds();
 
-router.post("/", memoryStorage.single("image"), async(req, res) => {
-  try{
+router.post("/", memoryStorage.single("image"), async (req, res) => {
+  try {
     console.log(req.file);
     console.log(req.body);
 
@@ -60,64 +59,57 @@ router.post("/", memoryStorage.single("image"), async(req, res) => {
     const file = bucket.file(originalname);
     const stream = file.createWriteStream();
 
-    stream.on("finish",async () => {
+    stream.on("finish", async () => {
       console.log("SUCCESS - NOW SENDING INFO TO DB");
       const publicUrl =
         "https://storage.googleapis.com/" + bucket.name + "/" + originalname;
       console.log(publicUrl);
       try {
+        let { data, error } = await supabase.from("ads").insert([
+          {
+            item: info.foodName,
+            image_url: publicUrl,
 
-      let {data,error} = await supabase.from('ads').insert([{
-        item: info.foodName,
-        image_url: publicUrl,
-     
-        brand:info.brand,
-          
-        userId:info.userId,
-         
-        expiryDate:info.expiryDate,
-        
-        size:info.size,
-      
-        measurementType:info.measurementType,
-   
-        quant:info.quant,
-   
-        extraInfo: info.extraInfo,
-  
-        datePosted: datePosted,
-   
-        timePosted: timePosted,
-     
-        postTo: info.postTo,
-  
-        long: info.long,
+            brand: info.brand,
 
-        lat:  info.lat
-      }]);
+            userId: info.userId,
 
-      if(error){
-        console.log("Error writing to DB: "+ error.message);
-      }else{
-        console.log("success");
-        res.send(true);
-      }}
-   
-  catch (e) {
-    console.log("ERROR WRITING TO DB: " + e);
+            expiryDate: info.expiryDate,
+
+            size: info.size,
+
+            measurementType: info.measurementType,
+
+            quant: info.quant,
+
+            extraInfo: info.extraInfo,
+
+            datePosted: datePosted,
+
+            timePosted: timePosted,
+
+            postTo: info.postTo,
+
+            long: info.long,
+
+            lat: info.lat,
+          },
+        ]);
+
+        if (error) {
+          console.log("Error writing to DB: " + error.message);
+        } else {
+          console.log("success");
+          res.send(true);
+        }
+      } catch (e) {
+        console.log("ERROR WRITING TO DB: " + e);
+      }
+    });
+    stream.end(fileBuffer);
+  } catch (error) {
+    console.log("ERROR: " + err);
   }
 });
-stream.end(fileBuffer);
-} catch (error) {
-console.log("ERROR: " + err);
-}
-});
-
-
-
-
-
-
-
 
 module.exports = router;

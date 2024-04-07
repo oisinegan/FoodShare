@@ -18,7 +18,7 @@ import {
   StatusBar,
 } from "react-native";
 import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../../App";
+import { Context, LocationContext } from "../../App";
 import Nav from "../components/Nav";
 import * as Location from "expo-location";
 import { TabView, SceneMap } from "react-native-tab-view";
@@ -32,11 +32,12 @@ import calculator from "../images/calculator.png";
 import handshake from "../images/business.png";
 function Profile({ navigation }) {
   const [user, setUser] = useContext(Context);
+  const [loc, setLoc] = useContext(LocationContext);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [town, setTown] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
-  const ip = 'http://192.168.1.8:8000';
+  const ip = "http://192.168.1.8:8000";
 
   const [items, setItems] = useState([]);
   const [likedItems, setLikedItems] = useState([]);
@@ -50,7 +51,7 @@ function Profile({ navigation }) {
   }, [user]);
   const getUserInfo = async () => {
     try {
-      const response = await fetch(ip+"/getUserInfo", {
+      const response = await fetch(ip + "/getUserInfo", {
         method: "post",
         body: JSON.stringify({ user }),
         headers: {
@@ -79,7 +80,7 @@ function Profile({ navigation }) {
 
   const fetchAllItems = async () => {
     try {
-      const response = await fetch(ip+"/retrieveUserAds", {
+      const response = await fetch(ip + "/retrieveUserAds", {
         method: "post",
         body: JSON.stringify({ user }),
         headers: {
@@ -112,7 +113,7 @@ function Profile({ navigation }) {
     try {
       "userid = " + user.id;
       ("CALLING LIKED ADS");
-      const response = await fetch(ip+"/retrieveLikedAds", {
+      const response = await fetch(ip + "/retrieveLikedAds", {
         method: "post",
         body: JSON.stringify({ user }),
         headers: {
@@ -148,34 +149,16 @@ function Profile({ navigation }) {
   }, []);
 
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    })();
+    getLocName();
   }, []);
 
-  let text = "Waiting..";
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    text = JSON.stringify(location);
-
-    getLocName(location);
-  }
-
-  async function getLocName(location) {
+  async function getLocName() {
     try {
       const response = await fetch(
         "https://nominatim.openstreetmap.org/reverse?format=json&lat=" +
-          location.coords.latitude +
+          loc.coords.latitude +
           "&lon=" +
-          location.coords.longitude,
+          loc.coords.longitude,
         {
           method: "get",
         }
@@ -208,7 +191,12 @@ function Profile({ navigation }) {
         <View style={styles.topNav}>
           <TouchableOpacity
             style={styles.viewPostsContainer}
-            onPress={() => navigation.navigate("ExtendedProfile",{long:location.coords.longitude, lat:location.coords.latitude })}
+            onPress={() =>
+              navigation.navigate("ExtendedProfile", {
+                long: loc.coords.longitude,
+                lat: loc.coords.latitude,
+              })
+            }
           >
             <Image source={posts} style={styles.viewPostsImage} />
           </TouchableOpacity>
@@ -226,11 +214,10 @@ function Profile({ navigation }) {
             {console.log("USER INFO")}
             {console.log(userInfo)}
             {userInfo ? (
-                 <Image
-                 source={{ uri: userInfo[0].url }}
-                 style={styles.profileImage}
-               />
-             
+              <Image
+                source={{ uri: userInfo[0].url }}
+                style={styles.profileImage}
+              />
             ) : (
               <Image source={noPic} style={styles.profileImage} />
             )}
@@ -239,36 +226,31 @@ function Profile({ navigation }) {
 
         <Text style={styles.userTitle}>{user.name}</Text>
         <Text style={styles.locInfo}>📍{town}</Text>
-       
 
         <View style={styles.activity}>
           <Text style={styles.title}>Total Shares</Text>
-          <View style={styles.imgCon} >
-          <Image
-                 source={handshake}
-                 style={styles.shares}
-               /></View>
-           {userInfo ? (
-          <>
-           <Text style={styles.shareRes}>{(userInfo[0].points)/5}</Text>
-          </>
-        ) : (
-          <Text></Text>
-        )}
+          <View style={styles.imgCon}>
+            <Image source={handshake} style={styles.shares} />
+          </View>
+          {userInfo ? (
+            <>
+              <Text style={styles.shareRes}>{userInfo[0].points / 5}</Text>
+            </>
+          ) : (
+            <Text></Text>
+          )}
 
-           <Text style={styles.title}>Share Points</Text>
-           <View style={styles.imgCon}><Image
-                 source={calculator}
-                 style={styles.shares}
-               /></View>
-               {userInfo ? (
-          <>
-           <Text style={styles.shareRes}>{userInfo[0].points}</Text>
-          </>
-        ) : (
-          <Text></Text>
-        )}
-           
+          <Text style={styles.title}>Share Points</Text>
+          <View style={styles.imgCon}>
+            <Image source={calculator} style={styles.shares} />
+          </View>
+          {userInfo ? (
+            <>
+              <Text style={styles.shareRes}>{userInfo[0].points}</Text>
+            </>
+          ) : (
+            <Text></Text>
+          )}
         </View>
       </ScrollView>
       <Nav />
@@ -285,16 +267,16 @@ const styles = StyleSheet.create({
     marginBottom: 70,
   },
   contentContainer: {},
-  userTitle:{
+  userTitle: {
     fontSize: 50,
-    
+
     textAlign: "center",
   },
   locInfo: {
     fontSize: 30,
     marginTop: 40,
-    marginBottom:40,
-    fontWeight:"bold",
+    marginBottom: 40,
+    fontWeight: "bold",
     textAlign: "center",
   },
   topNav: {
@@ -334,10 +316,10 @@ const styles = StyleSheet.create({
   },
   activity: {
     //backgroundColor: "lightgrey",
-    justifyContent:"center",
-    flexDirection:"column",
+    justifyContent: "center",
+    flexDirection: "column",
     flex: 1,
-    marginVertical:10,
+    marginVertical: 10,
   },
 
   title: {
@@ -345,25 +327,24 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: "center",
   },
-  imgCon:{
-    flexDirection:"row",
-    justifyContent:"center",
+  imgCon: {
+    flexDirection: "row",
+    justifyContent: "center",
   },
-  shares:{
+  shares: {
     height: 150,
     width: 150,
     borderRadius: 100,
-    padding:20,
-    marginTop:20,
-    backgroundColor:"white",
+    padding: 20,
+    marginTop: 20,
+    backgroundColor: "white",
   },
-  shareRes:{
-      fontSize: 45,
-      fontWeight:"bold",
-      marginVertical: 20,
-      textAlign: "center",
+  shareRes: {
+    fontSize: 45,
+    fontWeight: "bold",
+    marginVertical: 20,
+    textAlign: "center",
   },
-
 });
 
 export default Profile;

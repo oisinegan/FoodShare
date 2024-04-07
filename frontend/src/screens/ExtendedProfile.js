@@ -27,20 +27,20 @@ import * as Location from "expo-location";
 import users from "../images/users.png";
 import whiteicon from "../images/whiteicon.png";
 
-function ExtendedProfile({ route,navigation }) {
+function ExtendedProfile({ route, navigation }) {
   const [user, setUser] = useContext(Context);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [town, setTown] = useState(null);
   const [items, setItems] = useState([]);
   const [likedItems, setLikedItems] = useState([]);
-  const ip = 'http://192.168.1.8:8000';
+  const ip = "http://192.168.1.8:8000";
 
   const { params } = route;
   const loc = params;
   const lat = loc.lat;
   const long = loc.long;
-  console.log(lat + " "+ long);
+  console.log(lat + " " + long);
 
   useEffect(() => {
     if (user != null) {
@@ -51,7 +51,7 @@ function ExtendedProfile({ route,navigation }) {
 
   const fetchAllItems = async () => {
     try {
-      const response = await fetch(ip+"/retrieveUserAds", {
+      const response = await fetch(ip + "/retrieveUserAds", {
         method: "post",
         body: JSON.stringify({ user }),
         headers: {
@@ -75,7 +75,7 @@ function ExtendedProfile({ route,navigation }) {
       }
     } catch (e) {
       "GET ERROR: " + e;
-      Alert.alert("ERROR", "ERROR1: "+ e);
+      Alert.alert("ERROR", "ERROR1: " + e);
     }
   };
 
@@ -84,7 +84,7 @@ function ExtendedProfile({ route,navigation }) {
     try {
       "userid = " + user.id;
       ("CALLING LIKED ADS");
-      const response = await fetch(ip+"/retrieveLikedAds", {
+      const response = await fetch(ip + "/retrieveLikedAds", {
         method: "post",
         body: JSON.stringify({ user }),
         headers: {
@@ -102,15 +102,45 @@ function ExtendedProfile({ route,navigation }) {
       }
     } catch (e) {
       "GET ERROR: " + e;
-      Alert.alert("ERROR", "ERROR: "+e);
+      Alert.alert("ERROR", "ERROR: " + e);
+    }
+  };
+
+  const unregisterInterest = async (item) => {
+    console.log(process.env.IP_ADDRESS + "/unregisterInterest");
+    try {
+      const response = await fetch(ip + "/unregisterInterest", {
+        method: "post",
+        body: JSON.stringify({
+          adId: item.id,
+          userId: user.id,
+        }),
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+      if (result) {
+        console.log("register Interest");
+      }
+    } catch (e) {
+      console.log("ERROR.... " + e);
+      Alert.alert("ERROR:::::", e);
     }
   };
 
   const handleButtonPress = (item) => {
     console.log("PRESSED AD: " + item.id);
     console.log("PRESSED AD: " + item.item);
-
-    navigation.navigate("AdInterest", { id: item.id, name: item.item, long:long, lat:lat });
+    console.log(long + " ::: " + lat);
+    navigation.navigate("AdInterest", {
+      id: item.id,
+      name: item.item,
+      long: long,
+      lat: lat,
+    });
   };
 
   const [refreshing, setRefreshing] = React.useState(false);
@@ -223,10 +253,10 @@ function ExtendedProfile({ route,navigation }) {
   }
 
   const userAdsRoute = () => (
-    <View >
+    <View>
       <Text style={styles.title}>Your posts</Text>
       <ScrollView
-       style={styles.scrollCon}
+        style={styles.scrollCon}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -333,15 +363,13 @@ function ExtendedProfile({ route,navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-       <View style={styles.topNav}>
-            <TouchableOpacity style={styles.backButton}>
-              <Text style={styles.backText} onPress={() => navigation.goBack()}>
-                Back
-              </Text>
-            </TouchableOpacity>
-    
-            
-          </View>
+      <View style={styles.topNav}>
+        <TouchableOpacity style={styles.backButton}>
+          <Text style={styles.backText} onPress={() => navigation.goBack()}>
+            Back
+          </Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.contentContainer}>
         <TabView
           navigationState={{ index, routes }}
@@ -378,7 +406,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 10,
-   
   },
   backText: {
     color: "navy",

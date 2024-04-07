@@ -14,9 +14,10 @@ import {
   Dimensions,
   ImageBackground,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../../App";
+import { Context, LocationContext } from "../../App";
 import Nav from "../components/Nav";
 import postIcon from "../images/postIcon.png";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -28,8 +29,10 @@ import uuid from "react-native-uuid";
 
 function Post({ navigation }) {
   const [user, setUser] = useContext(Context);
+  const [loc, setLoc] = useContext(LocationContext);
   const [location, setLocation] = useState(null);
-  const ip = 'http://192.168.1.8:8000';
+  const ip = "http://192.168.1.8:8000";
+  const [posting, setPosting] = useState(false);
 
   const [info, setInfo] = useState({
     userId: user.id,
@@ -45,8 +48,9 @@ function Post({ navigation }) {
   };
 
   const handleSubmit = async () => {
-    let long = location.coords.longitude;
-    let lat = location.coords.latitude;
+    setPosting(true);
+    let long = loc.coords.longitude;
+    let lat = loc.coords.latitude;
     //Trim to 6 decimal points
     long = long.toFixed(6);
     lat = lat.toFixed(6);
@@ -62,6 +66,7 @@ function Post({ navigation }) {
       !info.extraInfo ||
       !image
     ) {
+      setPosting(false);
       Alert.alert("ERROR", "Fill in all fields!");
       return;
     }
@@ -84,9 +89,7 @@ function Post({ navigation }) {
       data.append("long", long);
       data.append("lat", lat);
 
-   
-
-      const response = await fetch(ip+ "/PostAd", {
+      const response = await fetch(ip + "/PostAd", {
         method: "post",
         body: data,
       });
@@ -94,7 +97,8 @@ function Post({ navigation }) {
       const result = await response.json();
 
       if (result) {
-        navigation.navigate("Landing")
+        setPosting(false);
+        navigation.navigate("Landing");
       } else {
         Alert.alert("ERROR", "ERR");
       }
@@ -113,14 +117,10 @@ function Post({ navigation }) {
       quality: 1,
     });
 
-
-
     if (!result.canceled) {
       const timeStamp = Date.now();
       const uniqueCode = uuid.v4();
       const imgName = user.id + "_" + timeStamp + "_" + uniqueCode + ".jpeg";
-
-     
 
       setImage({
         uri: result.assets[0].uri,
@@ -131,19 +131,19 @@ function Post({ navigation }) {
   }
 
   useEffect(() => {
-    getUserLoc();
+    // getUserLoc();
   }, []);
 
-  const getUserLoc = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      setErrorMsg("Permission to access location was denied");
-      return;
-    }
-    let location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
-    location;
-  };
+  // const getUserLoc = async () => {
+  //   let { status } = await Location.requestForegroundPermissionsAsync();
+  //   if (status !== "granted") {
+  //     setErrorMsg("Permission to access location was denied");
+  //     return;
+  //   }
+  //   let location = await Location.getCurrentPositionAsync({});
+  //   setLocation(location);
+  //   location;
+  // };
 
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState("date");
@@ -235,13 +235,20 @@ function Post({ navigation }) {
           style={styles.innerInfoExtra}
           onChangeText={(val) => handleChange("extraInfo", val)}
         />
-
-        <TouchableOpacity
-          style={styles.contentContainerPost}
-          onPress={handleSubmit}
-        >
-          <Image source={postIcon} style={styles.postButtonIcon} />
-        </TouchableOpacity>
+        {posting === true ? (
+          <ActivityIndicator
+            size="large"
+            color="#0000ff"
+            style={{ marginBottom: 40, marginTop: 25 }}
+          />
+        ) : (
+          <TouchableOpacity
+            style={styles.contentContainerPost}
+            onPress={handleSubmit}
+          >
+            <Image source={postIcon} style={styles.postButtonIcon} />
+          </TouchableOpacity>
+        )}
       </ScrollView>
 
       <Nav />
@@ -266,6 +273,7 @@ const styles = StyleSheet.create({
     marginTop: 25,
     width: 50,
     height: 50,
+    marginBottom: 40,
   },
   title: {
     fontSize: 25,

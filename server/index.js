@@ -69,6 +69,9 @@ app.use("/PostAd", postAdRouter);
 const getAllItemsRouter = require("./routes/getAllItems");
 app.use("/getAllItems", getAllItemsRouter);
 
+const searchItemsRouter = require("./routes/searchItems");
+app.use("/searchItems", searchItemsRouter);
+
 const retrieveUserAdsRouter = require("./routes/retrieveUserAds");
 app.use("/retrieveUserAds", retrieveUserAdsRouter);
 
@@ -95,6 +98,12 @@ app.use("/registerCharity", registerCharityRouter);
 
 const getCharityRouter = require("./routes/getCharity");
 app.use("/getCharity", getCharityRouter);
+
+const getPendingCharitiesRouter = require("./routes/getPendingCharities");
+app.use("/getPendingCharities", getPendingCharitiesRouter);
+
+const completeCharityRouter = require("./routes/completeCharity");
+app.use("/completeCharity", completeCharityRouter);
 
 const completeShareRouter = require("./routes/CompleteShare");
 app.use("/completeShare", completeShareRouter);

@@ -7,21 +7,21 @@ const jwt = require("jsonwebtoken");
 const secretKey = process.env.SECRET_KEY;
 
 router.post("/", (req, res, next) => {
-  console.log("req.body")
+  console.log("req.body");
   console.log(req.body);
   let info = req.body;
   console.log(info);
   passport.authenticate("local", (err, user, info) => {
-    console.log("Auth.....")
-   // if (err) throw err;
-    if(err){
-      console.log("Error during authenticating: "+ err.message);
+    console.log("Auth.....");
+    // if (err) throw err;
+    if (err) {
+      console.log("Error during authenticating: " + err.message);
     }
     if (!user) {
       console.log("NO USER");
       res.send({ user: false });
     } else {
-      console.log("user exisrs")
+      console.log("user exisrs");
       req.logIn(user, (err) => {
         if (err) throw err;
         const token = jwt.sign(

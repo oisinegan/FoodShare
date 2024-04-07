@@ -21,8 +21,9 @@ import { Context } from "../../App";
 import Nav from "../components/Nav";
 import noPic from "../images/noPic.png";
 import message from "../images/message.png";
-import { StreamChat } from 'stream-chat';
-import { chatApiKey } from '../config/chatConfig';
+import * as Location from "expo-location";
+import { StreamChat } from "stream-chat";
+import { chatApiKey } from "../config/chatConfig";
 
 function AdInterest({ route, navigation }) {
   const [user, setUser] = useContext(Context);
@@ -32,96 +33,81 @@ function AdInterest({ route, navigation }) {
   const { params } = route;
   const ad = params;
   const chatClient = StreamChat.getInstance(chatApiKey);
-  const ip = 'http://192.168.1.8:8000';
+  const ip = "http://192.168.1.8:8000";
 
-    
   useEffect(() => {
     if (ad != null) {
-     
       getUserInfo();
       fetchUsers();
       getUserLoc();
       setupClient();
     }
- 
-    
   }, [ad]);
-
 
   const [clientIsReady, setClientIsReady] = useState(false);
 
+  const setupClient = async () => {
+    console.log("WAITING 1");
 
+    //await chatClient.disconnectUser();
 
-
-const setupClient = async () => {
-  console.log("WAITING 1")
- 
-  //await chatClient.disconnectUser();
- 
-
-  try {
-    
-    chatClient.connectUser(
+    try {
+      chatClient.connectUser(
         {
-            id: user.name.toString(),
-            name: user.name.toString(),
-           
+          id: user.name.toString(),
+          name: user.name.toString(),
         },
-        chatClient.devToken(user.name.toString()),
-    );
+        chatClient.devToken(user.name.toString())
+      );
 
-    //console.log('Connected User ID from set up client:', chatClient.user.id);
-    console.log("IS CLIENT READY - "+ clientIsReady)
-    setClientIsReady(true)
-    console.log("IS CLIENT READY - "+ clientIsReady)
-  
+      //console.log('Connected User ID from set up client:', chatClient.user.id);
+      console.log("IS CLIENT READY - " + clientIsReady);
+      setClientIsReady(true);
+      console.log("IS CLIENT READY - " + clientIsReady);
     } catch (error) {
       if (error instanceof Error) {
-        console.error(`An error occurred while connecting the user: ${error.message}`);
+        console.error(
+          `An error occurred while connecting the user: ${error.message}`
+        );
       }
     }
   };
 
-  if(!chatClient.user){
+  if (!chatClient.user) {
     setupClient();
   }
 
+  const getUserInfo = async () => {
+    try {
+      const response = await fetch(ip + "/getUserInfo", {
+        method: "post",
+        body: JSON.stringify({ user }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
+      const result = await response.json();
+      if (result) {
+        //(result);
+        // const filteredRes = result.filter(
+        //   (item) => Object.keys(item).length !== 0
+        // );
 
+        /******** UPDATE FETCH TO NOT SEND USERS OWN ADS **************/
 
-
-const getUserInfo = async () => {
-  try {
-    const response = await fetch(ip+"/getUserInfo", {
-      method: "post",
-      body: JSON.stringify({ user }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const result = await response.json();
-    if (result) {
-      //(result);
-      // const filteredRes = result.filter(
-      //   (item) => Object.keys(item).length !== 0
-      // );
-
-      /******** UPDATE FETCH TO NOT SEND USERS OWN ADS **************/
-
-      setUserInfo(result);
-     
-    } else {
-      Alert.alert("ERROR", "ERR");
+        setUserInfo(result);
+      } else {
+        Alert.alert("ERROR", "ERR");
+      }
+    } catch (e) {
+      Alert.alert("ERROR", e);
     }
-  } catch (e) {
-    Alert.alert("ERROR", e);
-  }
-};
+  };
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(ip+"/getResponses", {
+      const response = await fetch(ip + "/getResponses", {
         method: "post",
         body: JSON.stringify(ad),
         headers: {
@@ -130,12 +116,12 @@ const getUserInfo = async () => {
       });
 
       const result = await response.json();
-     
+
       if (result) {
         const filteredRes = result.filter(
           (item) => Object.keys(item).length !== 0
         );
-        
+
         setInterest(filteredRes);
       } else {
         Alert.alert("ERROR", "ERR");
@@ -154,6 +140,8 @@ const getUserInfo = async () => {
     let userLat = ad?.lat;
     let userLong = ad?.long;
 
+    console.log("user inter: " + adLat + " " + adLon);
+    console.log("user: " + userLat + " " + userLong);
     if (userLong < 0) {
       "userLong B: " + userLong;
       userLong = userLong * -1;
@@ -187,7 +175,6 @@ const getUserInfo = async () => {
     }
   }
 
-
   const getUserLoc = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
@@ -196,7 +183,6 @@ const getUserInfo = async () => {
     }
     let location = await Location.getCurrentPositionAsync({});
     setLocation(location);
-    
   };
 
   const createMessageChannel = async (otherUser) => {
@@ -204,84 +190,77 @@ const getUserInfo = async () => {
     console.log(user.name);
     console.log("PRESSED");
     try {
-      
-        
-        const userN = user.name.toString().toLowerCase();
-        const otherUserN = otherUser.name.toString().toLowerCase();
-        const channelName = userN+"_"+otherUserN + "/" + ad.id;
-        console.log("channelName:", channelName);
-      const channel = chatClient.channel('messaging', {
-          name: channelName,
-          members: [ userN,otherUserN
-          ],
+      const userN = user.name.toString().toLowerCase();
+      const otherUserN = otherUser.name.toString().toLowerCase();
+      const channelName = userN + "_" + otherUserN + "/" + ad.id;
+      console.log("channelName:", channelName);
+      const channel = chatClient.channel("messaging", {
+        name: channelName,
+        members: [userN, otherUserN],
       });
 
       await channel.create();
       navigation.navigate("Messages");
-
- 
-    
     } catch (e) {
       console.log("ERROR CREATING CHANNEL: " + e);
-    
     }
   };
 
-  if(clientIsReady){
+  if (clientIsReady) {
     return (
       <SafeAreaView style={styles.container}>
-         <View style={styles.topNav}>
-            <TouchableOpacity style={styles.backButton}>
-              <Text style={styles.backText} onPress={() => navigation.goBack()}>
-                Back
-              </Text>
-            </TouchableOpacity>
-    
-            
-          </View>
+        <View style={styles.topNav}>
+          <TouchableOpacity style={styles.backButton}>
+            <Text style={styles.backText} onPress={() => navigation.goBack()}>
+              Back
+            </Text>
+          </TouchableOpacity>
+        </View>
         <ScrollView style={styles.contentContainer}>
           <Text style={styles.titleText}>Interest in {ad.name}..</Text>
-       
-  
+
           {interest.map((item) => (
             <View style={styles.interestCont}>
               <View style={styles.imageCont}>
-                {item.url ? (<Image  source={{ uri: item.url }} style={styles.image} /> ):(    <Image source={noPic} style={styles.image} />)}
-              
+                {item.url ? (
+                  <Image source={{ uri: item.url }} style={styles.image} />
+                ) : (
+                  <Image source={noPic} style={styles.image} />
+                )}
               </View>
-  
+
               <View style={styles.innerInterestCont}>
                 <Text style={styles.innerName}>{item.name}</Text>
-  
-                <Text style={styles.innerPoints}>Share points: {item.points}</Text>
-              
-                <Text style={styles.innerDist}>Distance: {calculateDistance(item.lat, item.long)}km </Text>
-              
+
+                <Text style={styles.innerPoints}>
+                  Share points: {item.points}
+                </Text>
+
+                <Text style={styles.innerDist}>
+                  Distance: {calculateDistance(item.lat, item.long)}km{" "}
+                </Text>
               </View>
-        
-              <TouchableOpacity style={styles.imageMsgContainer} onPress={()=>createMessageChannel(item)}>
-                <View  style={styles.imageMsgInnerContainer}>
-                
-              <Image source={message} style={styles.imageMsg} />
-              </View>
+
+              <TouchableOpacity
+                style={styles.imageMsgContainer}
+                onPress={() => createMessageChannel(item)}
+              >
+                <View style={styles.imageMsgInnerContainer}>
+                  <Image source={message} style={styles.imageMsg} />
+                </View>
               </TouchableOpacity>
             </View>
           ))}
-  
-  
         </ScrollView>
-  
+
         <Nav />
       </SafeAreaView>
     );
-  }else{
+  } else {
     <SafeAreaView>
-      <Text>
-        Waiting on user
-      </Text>
-    </SafeAreaView>
+      <Text>Waiting on user</Text>
+    </SafeAreaView>;
   }
-
 }
 
 const styles = StyleSheet.create({
@@ -295,7 +274,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 10,
-   
   },
   backText: {
     color: "navy",
@@ -310,12 +288,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 25,
     textAlign: "center",
-     marginTop: 20,
+    marginTop: 20,
     paddingBottom: 25,
   },
   interestCont: {
     flexDirection: "row",
-   
+
     backgroundColor: "",
     marginBottom: 10,
     borderTopWidth: 1,
@@ -328,7 +306,7 @@ const styles = StyleSheet.create({
   image: {
     height: 70,
     width: 70,
-    borderRadius:20,
+    borderRadius: 20,
   },
   innerInterestCont: {
     justifyContent: "center",
@@ -346,34 +324,31 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "300",
   },
-  titleText:{
-    fontSize:30,
+  titleText: {
+    fontSize: 30,
     fontWeight: "40",
-    padding:20,
-    textAlign:"center",
-    
+    padding: 20,
+    textAlign: "center",
   },
-  imageMsgContainer:{
+  imageMsgContainer: {
     // // padding: 25,
-    flex:1,
-    flexDirection:"row",
-   
+    flex: 1,
+    flexDirection: "row",
+
     justifyContent: "flex-end",
-    paddingRight:30, 
-    alignItems:"center",
-    
+    paddingRight: 30,
+    alignItems: "center",
   },
-  imageMsgInnerContainer:{  
-    justifyContent: "center", 
-    alignItems:"center",
-    backgroundColor:"lightblue",
+  imageMsgInnerContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "lightblue",
     borderRadius: 30,
-    padding:7,
+    padding: 7,
   },
-  imageMsg:{
+  imageMsg: {
     height: 40,
     width: 40,
-   
   },
 });
 
