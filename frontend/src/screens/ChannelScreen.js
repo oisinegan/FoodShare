@@ -157,6 +157,10 @@ function ChannelScreen({ route, navigation }) {
         deleteAd();
       } else {
         console.log("NO RESULT");
+        Alert.alert("❌ Points not awarded! ❌", "The ad has already been deleted!");
+        const destroy = await channel.delete();
+        console.log("DESTROY CHANNEL: " + destroy);
+        navigation.navigate("Landing");
       }
     } catch (e) {
       console.log("FETCH ERROR: " + e);

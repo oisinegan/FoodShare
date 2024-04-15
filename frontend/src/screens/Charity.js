@@ -38,6 +38,61 @@ function Charity({ navigation }) {
   const [userInfo, setUserInfo] = useState(null);
   const ip = "http://192.168.1.8:8000";
 
+  //errors
+  const [nameErr, setNameErr] = useState("");
+  const [numberErr, setNumberErr] = useState(" ");
+  const [webErr, setWebErr] = useState(" ");
+
+      
+  const validate = () => {
+    let noCorrectInputs = 0;
+     //Item
+     if (info.name == "") {
+      setNameErr("Charity name is empty");
+    }else if (info.name == undefined) {
+      setNameErr("Charity name  is empty");
+    }  else if (info.name.length < 3) {
+      setNameErr("Provide more than 3 characters!");
+    } else if (info.name.length >= 20) {
+      setNameErr("Too many characters! (Max 20 characters)");
+    } else {
+      noCorrectInputs++;
+      setNameErr("");
+    }
+
+
+      //Phone
+       if (info.phone == "") {
+        setNumberErr("Enter a phone number!");
+      }else if (info.phone == undefined) {
+        setNumberErr("Enter a phone number!");
+      }else if (info.phone.toString().length <9 ) {
+        setNumberErr("Number must contain atleast 9 digits!");
+      } else if (info.phone.toString().length >12 ) {
+        setNumberErr("Invalid phone number! Max 12 digits.");
+      } else {
+        noCorrectInputs++;
+        setNumberErr("");
+      }
+
+    //Web
+     if (info.web == "") {
+      setWebErr("Webite is empty");
+    }else if (info.web == undefined) {
+      setWebErr("Webite is empty");
+    }  else if (info.web.indexOf('.')===-1) {
+      setWebErr("Invalid URL!");
+    } else if (info.web.indexOf('www')===-1) {
+      setWebErr("Invalid URL!");
+    } else {
+      noCorrectInputs++;
+      setWebErr("");
+    }
+
+  
+    return noCorrectInputs;
+  }
+
   useEffect(() => {
     if (user != null) {
       getUserInfo();
@@ -129,16 +184,24 @@ function Charity({ navigation }) {
 
     let userId = user.id;
 
-    if (!info.name || !info.phone || !info.web) {
-      Alert.alert("ERROR", "Fill in all fields!");
-      return;
-    }
+  
     if (!isChecked) {
       Alert.alert("ERROR", "We need your location to register a charity!");
       return;
     }
     if (!long || !lat) {
       Alert.alert("Location error!", "Could not find location! Try again!");
+      return;
+    }
+
+
+
+    let noCorrectInputs = validate();
+
+    console.log(noCorrectInputs);
+
+    if(noCorrectInputs !== 3){
+      Alert.alert("Fill out all fields!", "Correct fields: "+ noCorrectInputs + "/3");
       return;
     }
 
@@ -226,12 +289,13 @@ function Charity({ navigation }) {
             <View style={styles.modalView}>
               <Text style={styles.modalText}>Register a Charity!</Text>
               <TextInput
-                placeholder="Name"
+                placeholder="Charity name"
                 name="name"
                 style={styles.input}
                 placeholderTextColor="grey"
                 onChangeText={(val) => handleChange("name", val)}
               />
+               <Text style={styles.errorMsg}>{nameErr}</Text>
               <TextInput
                 placeholder="Phone Number"
                 name="phone"
@@ -240,7 +304,7 @@ function Charity({ navigation }) {
                 placeholderTextColor="grey"
                 onChangeText={(val) => handleChange("phone", val)}
               />
-
+              <Text style={styles.errorMsg}>{numberErr}</Text>
               <TextInput
                 placeholder="Website"
                 name="web"
@@ -248,7 +312,7 @@ function Charity({ navigation }) {
                 placeholderTextColor="grey"
                 onChangeText={(val) => handleChange("web", val)}
               />
-
+              <Text style={styles.errorMsg}>{webErr}</Text>
               <View style={styles.section}>
                 <Checkbox
                   style={styles.checkbox}
@@ -401,7 +465,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   modalText: {
-    marginBottom: 15,
+    marginBottom: 25,
     fontSize: 20,
     textAlign: "center",
   },
@@ -409,9 +473,9 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 2,
     borderRadius: 15,
-    padding: 5,
+    padding: 15,
     width: 200,
-    marginVertical: 10,
+  
     borderColor: "black",
   },
 
@@ -459,6 +523,13 @@ const styles = StyleSheet.create({
 
     fontSize: 18,
     fontWeight: "bold",
+  },
+  errorMsg: {
+    color: "red",
+    fontSize:15,
+    
+    marginTop: 2,
+    marginBottom: 10,
   },
 });
 

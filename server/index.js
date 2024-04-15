@@ -108,6 +108,9 @@ app.use("/completeCharity", completeCharityRouter);
 const completeShareRouter = require("./routes/CompleteShare");
 app.use("/completeShare", completeShareRouter);
 
+const editPostRouter = require("./routes/editPost");
+app.use("/editPost", editPostRouter);
+
 const removeAdRouter = require("./routes/removeAd");
 app.use("/removeAd", removeAdRouter);
 

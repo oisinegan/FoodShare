@@ -20,6 +20,84 @@ import Nav from "../components/Nav";
 function Register({ navigation }) {
   const [info, setInfo] = useState([{}]);
   const ip = "http://192.168.1.8:8000";
+  const [nameErr, setNameErr] = useState("");
+  const [emailErr, setEmailErr] = useState(" ");
+  const [passwordErr, setPasswordErr] = useState(" ");
+
+  const validate = () => {
+    let noCorrectInputs = 0;
+     //Item
+     if (info.name == "") {
+      setNameErr("Username is empty");
+    }else if (info.name == undefined) {
+      setNameErr("Username  is empty");
+    }  else if (info.name.length < 5) {
+      setNameErr("Provide more than 5 characters!");
+    } else if (info.name.length >= 15) {
+      setNameErr("Too many characters! (Max 15 characters)");
+    } else if (info.name.indexOf(" ") !== -1) {
+      setNameErr("The username cannot contain spaces!");
+    } else if (info.name.indexOf("_") !== -1) {
+      setNameErr("The username cannot have an underscore!");
+    }  else {
+      noCorrectInputs++;
+      setNameErr("");
+    }
+
+      //Email
+       if (info.email == "") {
+        setEmailErr("Enter an email!");
+      }else if (info.email == undefined) {
+        setEmailErr("Enter an email!");
+      }else if (info.email.indexOf("@") === -1) {
+        setEmailErr("Enter a valid email!");
+      } else if (info.email.indexOf(".") === -1) {
+        setEmailErr("Enter a valid email!");
+      } else if (info.email.length <5) {
+        setEmailErr("Enter a valid email!");
+      }else {
+        noCorrectInputs++;
+        setEmailErr("");
+      }
+
+
+    //Password
+    if (info.password == "") {
+      setPasswordErr("Password field is empty!");
+    } else if (info.password == undefined) {
+      setPasswordErr("Password field is empty!");
+    }else if (info.password.length < 6) {
+      setPasswordErr("password must be longer than 6 characters!");
+    } else if (upperCaseTest(info.password) == false) {
+      setPasswordErr("Password must contain a capital!");
+    } else if (numberTest(info.password) == false) {
+      setPasswordErr("Password must contain a number!");
+    } else {
+      noCorrectInputs++;
+      setPasswordErr("");
+    }
+
+  
+    return noCorrectInputs;
+  }
+   //Specific tests - methods return true/false
+   function upperCaseTest(string) {
+    //If string contains at least one  Upper case letter
+    return /[A-Z]/.test(string);
+  }
+  function numberTest(string) {
+    //If string contains at least one number
+    return /[1-9]/.test(string);
+  }
+  function validEmail(string) {
+    var res1 = /[@]/.test(string);
+    var res2 = /[.]/.test(string);
+
+    if (res1 && res2) {
+      return true;
+    }
+    return false;
+  }
 
   const handleChange = (name, val) => {
     setInfo((prev) => {
@@ -29,18 +107,12 @@ function Register({ navigation }) {
   };
 
   const handleSubmit = async () => {
-    if (!info.name || !info.email || !info.password) {
-      Alert.alert("ERROR", "Fill in all fields!");
-      return;
-    }
+    let noCorrectInputs = validate();
 
-    if (info.name.indexOf(" ") !== -1) {
-      Alert.alert("ERROR", "The username cannot contain spaces!");
-      return;
-    }
+    console.log(noCorrectInputs);
 
-    if (info.name.indexOf("_") !== -1) {
-      Alert.alert("ERROR", "The username cannot have an underscore!");
+    if(noCorrectInputs !== 3){
+      Alert.alert("Fill out all fields!", "Correct fields: "+ noCorrectInputs + "/3");
       return;
     }
 
@@ -74,17 +146,18 @@ function Register({ navigation }) {
           <View style={styles.conBorder}>
             <TextInput
               name="name"
-              placeholder="Name"
+              placeholder="Username"
               style={styles.input}
               onChangeText={(val) => handleChange("name", val)}
             />
+              <Text style={styles.errorMsg}>{nameErr}</Text>
             <TextInput
               name="email"
               placeholder="Email"
               style={styles.input}
               onChangeText={(val) => handleChange("email", val)}
             />
-
+         <Text style={styles.errorMsg}>{emailErr}</Text>
             <TextInput
               secureTextEntry={true}
               placeholder="Password"
@@ -92,6 +165,7 @@ function Register({ navigation }) {
               style={styles.input}
               onChangeText={(val) => handleChange("password", val)}
             />
+             <Text style={styles.errorMsg}>{passwordErr}</Text>
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.text}>Register</Text>
@@ -150,8 +224,8 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 2,
     borderRadius: 15,
-    padding: 10,
-    marginVertical: 20,
+    padding: 15,
+    marginVertical: 10,
     marginHorizontal: 10,
     borderColor: "black",
   },
@@ -163,6 +237,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     backgroundColor: "black",
     marginBottom: 25,
+    marginTop:10,
   },
   text: {
     fontSize: 16,
@@ -170,6 +245,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     letterSpacing: 0.25,
     color: "white",
+  },
+  errorMsg: {
+    color: "red",
+    fontSize:15,
+    paddingLeft: 10,
+    marginTop: 2,
+    marginBottom: 10,
   },
 });
 

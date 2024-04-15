@@ -17,9 +17,11 @@ router.post("/", async (req, res) => {
 
     if (error) {
       console.log("ERROR1: " + error.message);
+      return res.send(false);
     }
     if (!data) {
       console.log("No ads founds1");
+      return res.send(false);
     }
     console.log(data);
 
@@ -48,7 +50,7 @@ router.post("/", async (req, res) => {
       console.log("Error writing to DB1: " + err.message);
     } else {
       console.log("success completing share");
-      res.send(true);
+      return res.send(true);
     }
   } catch (e) {
     console.log("e1: " + e);

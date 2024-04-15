@@ -19,15 +19,16 @@ import {
   processColor,
 } from "react-native";
 import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../../App";
+import { Context, LocationContext } from "../../App";
 import Nav from "../components/Nav";
 import MapView, { Marker, Callout } from "react-native-maps";
 import { TabView, SceneMap } from "react-native-tab-view";
 import * as Location from "expo-location";
 import users from "../images/users.png";
+import editPost from "../images/editPost.png";
 import whiteicon from "../images/whiteicon.png";
 
-function ExtendedProfile({ route, navigation }) {
+function ExtendedProfile({  navigation }) {
   const [user, setUser] = useContext(Context);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -35,9 +36,7 @@ function ExtendedProfile({ route, navigation }) {
   const [items, setItems] = useState([]);
   const [likedItems, setLikedItems] = useState([]);
   const ip = "http://192.168.1.8:8000";
-
-  const { params } = route;
-  const loc = params;
+  const [loc, setLoc] = useContext(LocationContext);
   const lat = loc.lat;
   const long = loc.long;
   console.log(lat + " " + long);
@@ -140,6 +139,20 @@ function ExtendedProfile({ route, navigation }) {
       name: item.item,
       long: long,
       lat: lat,
+    });
+  };
+  const handleEditButtonPress = (item) => {
+    console.log("PRESSED AD: " + item.id);
+    console.log("PRESSED AD: " + item.item);
+    console.log(long + " ::: " + lat);
+  
+    navigation.navigate("EditPost", {
+      id: item.id,
+      foodName: item.item,
+      brand: item.brand,
+      size: item.size,
+      quant: item.quant,
+      extraInfo: item.extraInfo,
     });
   };
 
@@ -289,6 +302,12 @@ function ExtendedProfile({ route, navigation }) {
                 onPress={() => handleButtonPress(item)}
               >
                 <Image source={users} style={styles.postLikeButtonIcon} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.postLikeButton1}
+                onPress={() => handleEditButtonPress(item)}
+              >
+                <Image source={editPost} style={styles.postLikeButtonIcon1} />
               </TouchableOpacity>
             </View>
           </View>
@@ -526,6 +545,20 @@ const styles = StyleSheet.create({
     right: 15,
     marginLeft: -5,
   },
+  postLikeButton1: {
+    borderRadius: 100,
+    backgroundColor: "white",
+    borderWidth: 3,
+    borderColor: "white",
+    marginRight: 20,
+    width: 65,
+    height: 65,
+    alignSelf: "flex-end",
+    position: "absolute",
+    bottom: -28,
+    right: 100,
+    marginLeft: -5,
+  },
   buttonPressed: {
     backgroundColor: "white",
   },
@@ -535,6 +568,12 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     marginTop: 4,
     borderRadius: 100,
+  },
+  postLikeButtonIcon1: {
+    width: 45,
+    height: 45,
+    marginLeft: 7,
+    marginTop: 6,
   },
 });
 

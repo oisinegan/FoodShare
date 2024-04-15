@@ -124,16 +124,24 @@ function Landing({ navigation }) {
         ) : (
           <>
             <View style={styles.searchCon}>
-              <View style={styles.search}>
+            <View style={styles.search}>
                 <TextInput
                   placeholder="Search item"
                   style={styles.searchBar}
-                  //onChangeText={(val) => handleChange("extraInfo", val)}
+                  onChangeText={(val) => handleChangeSearch("searchReq", val)}
                 />
               </View>
-              <TouchableOpacity onPress={() => console.log("Search")}>
-                <Image source={searchB} style={styles.searchButton} />
-              </TouchableOpacity>
+              {searching === true ? (
+                <ActivityIndicator
+                  size="large"
+                  color="#0000ff"
+                  style={{ marginRight: 5 }}
+                />
+              ) : (
+                <TouchableOpacity onPress={() => handleSearch()}>
+                  <Image source={searchB} style={styles.searchButton} />
+                </TouchableOpacity>
+              )}
               <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
                 <Image source={settings} style={styles.searchButton} />
               </TouchableOpacity>
@@ -547,7 +555,7 @@ function Landing({ navigation }) {
           );
 
           console.log("filtered: " + filteredRes.image);
-          setNoneMsg("No new food posting!");
+          setNoneMsg("No new food postings!");
           setItems(filteredRes);
           console.log(filteredRes);
         } else {
@@ -832,7 +840,7 @@ const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
 
-    marginTop: 22,
+    marginTop: "70%",
   },
   modalView: {
     margin: 20,

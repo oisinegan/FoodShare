@@ -36,7 +36,7 @@ function Login({ navigation }) {
   const handleSubmit = async () => {
     if (!info.username || !info.password) {
       info;
-      Alert.alert("ERROR", "Fill in all fields!");
+      Alert.alert("Missing fields!", "Enter email and password!");
       return;
     }
 
@@ -73,7 +73,7 @@ function Login({ navigation }) {
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <Text style={styles.title}>Login</Text>
+        <Text style={styles.title}>Foodshare.</Text>
         <View style={styles.innerContainer}>
           <View style={styles.conBorder}>
             <TextInput
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 2,
     borderRadius: 15,
-    padding: 10,
+    padding: 15,
     marginVertical: 20,
     marginHorizontal: 10,
     borderColor: "black",

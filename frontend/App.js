@@ -13,6 +13,7 @@ import AdInterest from "./src/screens/AdInterest";
 import EditProfile from "./src/screens/EditProfile";
 import ExtendedProfile from "./src/screens/ExtendedProfile";
 import Messages from "./src/screens/Messages";
+import EditPost from "./src/screens/EditPost";
 import ChannelScreen from "./src/screens/ChannelScreen"
 import ReviewCharity from "./src/screens/ReviewCharity"
 import * as Location from "expo-location";
@@ -112,6 +113,11 @@ export default function App() {
           <Stack.Screen
             name="AdInterest"
             component={AdInterest}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="EditPost"
+            component={EditPost}
             options={{ headerShown: false }}
           />
           <Stack.Screen

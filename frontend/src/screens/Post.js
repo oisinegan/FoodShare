@@ -39,6 +39,116 @@ function Post({ navigation }) {
   });
   const [image, setImage] = useState(null);
 
+    //errors
+    const [itemErr, setItemErr] = useState("");
+    const [brandErr, setBrandErr] = useState(" ");
+    const [sizeErr, setSizeErr] = useState(" ");
+    const [dateErr, setDateErr] = useState(" ");
+    const [quantErr, setQuantErr] = useState(" ");
+    const [postToErr, setPostToErr] = useState(" ");
+    const [extraInfoErr, setExtraInfoErr] = useState("");
+    const [imageErr, setImageErr] = useState("");
+
+  const validate = () => {
+    let noCorrectInputs = 0;
+     //Item
+     if (info.foodName == "") {
+      setItemErr("Food name field is empty");
+    }else if (info.foodName == undefined) {
+      setItemErr("Food name field is empty");
+    }  else if (info.foodName.length < 3) {
+      setItemErr("Provide more than 3 characters!");
+    } else if (info.foodName.length >= 20) {
+      setItemErr("Too many characters! (Max 20 characters)");
+    } else {
+      noCorrectInputs++;
+      setItemErr("");
+    }
+      //Brand
+      if (info.brand == "") {
+        setBrandErr("Brand field  is empty");
+      }else if (info.brand == undefined) {
+        setBrandErr("Brand field is empty");
+      }  else if (info.brand.length < 3) {
+        setBrandErr("Provide more than 3 characters!");
+      } else if (info.brand.length >= 20) {
+        setBrandErr("Too many characters! (Max 20 characters)");
+      } else {
+        noCorrectInputs++;
+        setBrandErr("");
+      }
+
+       //Image
+        if (image == undefined) {
+        setImageErr("Upload an image!");
+      } else {
+        noCorrectInputs++;
+        setImageErr("");
+      }
+       //Size
+       if (info.size == "") {
+        setSizeErr("Size field is empty");
+      }else if (info.size == undefined) {
+        setSizeErr("Size field is empty");
+      }else if(info.measurementType === undefined){
+        setSizeErr("Select a measurement type!")
+      }else if (info.size > 2000) {
+        setSizeErr("Size must be less than 2000!");
+      } else if (info.size == 0) {
+        setSizeErr("Size must be greater than 0");
+      } else {
+        noCorrectInputs++;
+        setSizeErr("");
+      }
+
+        //Image
+        if (info.expiryDate == undefined) {
+        setDateErr("Choose an expiry!");
+      } else {
+        noCorrectInputs++;
+        setDateErr("");
+      }
+
+      //Quantity
+       if (info.quant == "") {
+        setQuantErr("Quantity field is empty");
+      }else if (info.quant == undefined) {
+        setQuantErr("Quantity field is empty");
+      }else if (info.quant > 200) {
+        setQuantErr("Quantity must be less than 200!");
+      } else if (info.quant == 0) {
+        setQuantErr("Quantity must be greater than 0");
+      } else {
+        noCorrectInputs++;
+        setQuantErr("");
+      }
+
+     //Post to
+      if (info.postTo == undefined) {
+        setPostToErr("Select an option!");
+      } else {
+        noCorrectInputs++;
+        setPostToErr("");
+      }
+
+    //Extra info
+    if (info.extraInfo == "") {
+      setExtraInfoErr("Extra info field is empty");
+    }else if (info.extraInfo == undefined) {
+  
+      setExtraInfoErr("Extra info field is empty");
+    }  else if (info.extraInfo.length < 3) {
+      setExtraInfoErr("Provide more than 3 characters!");
+    } else if (info.extraInfo.length > 200) {
+      setExtraInfoErr("Too many characters! (Max 200 characters)");
+    } else {
+      noCorrectInputs++;
+      setExtraInfoErr("");
+    }
+    return noCorrectInputs;
+  }
+
+
   const handleChange = (name, val) => {
     setInfo((prev) => {
       return { ...prev, [name]: val.trim() };
@@ -49,30 +159,28 @@ function Post({ navigation }) {
 
   const handleSubmit = async () => {
     setPosting(true);
+  
     let long = loc.coords.longitude;
     let lat = loc.coords.latitude;
     //Trim to 6 decimal points
     long = long.toFixed(6);
     lat = lat.toFixed(6);
 
-    if (
-      !info.foodName ||
-      !info.brand ||
-      !info.size ||
-      !info.expiryDate ||
-      !info.measurementType ||
-      !info.postTo ||
-      !info.quant ||
-      !info.extraInfo ||
-      !image
-    ) {
-      setPosting(false);
-      Alert.alert("ERROR", "Fill in all fields!");
-      return;
-    }
 
     if (!long || !lat) {
       Alert.alert("Location error!", "Could not find location! Try again!");
+      return;
+    }
+    
+    let noCorrectInputs = validate();
+
+
+    console.log("HERE_____")
+    console.log(noCorrectInputs);
+
+    if(noCorrectInputs !== 8){
+      Alert.alert("Fill out all fields!", "Correct fields: "+ noCorrectInputs + "/8");
+      setPosting(false);
       return;
     }
 
@@ -164,30 +272,32 @@ function Post({ navigation }) {
   ];
 
   const postTo = [
-    { key: "Group", value: "Group" },
     { key: "General", value: "General" },
   ];
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.contentContainer}>
-        <Text style={styles.title}>Post screen {user.name}</Text>
+       
 
         <TextInput
           placeholder="Item"
           style={styles.innerInfo}
           onChangeText={(val) => handleChange("foodName", val)}
         />
+        <Text style={styles.errorMsg}>{itemErr}</Text>
         <TextInput
           placeholder="Brand"
           style={styles.innerInfo}
           onChangeText={(val) => handleChange("brand", val)}
         />
+        <Text style={styles.errorMsg}>{brandErr}</Text>
 
         <View style={styles.imageCon}>
           <Button title="Pick an image from camera roll" onPress={pickImage} />
           {image && <Image source={{ uri: image.uri }} style={styles.image} />}
         </View>
+        <Text style={styles.errorMsg}>{imageErr}</Text>
 
         <View style={styles.sizeCon}>
           <TextInput
@@ -203,6 +313,7 @@ function Post({ navigation }) {
             save="value"
           />
         </View>
+        <Text style={styles.errorMsg}>{sizeErr}</Text>
         <View style={styles.sizeCon}>
           <Text style={styles.expiryInfo}>Expiry:</Text>
           <View style={styles.dateTimeCon}>
@@ -216,6 +327,7 @@ function Post({ navigation }) {
             />
           </View>
         </View>
+        <Text style={styles.errorMsg}>{dateErr}</Text>
         <TextInput
           placeholder="Quantity"
           // keyboardType={Device.isAndroid ? "numeric" : "number-pad"}
@@ -223,18 +335,21 @@ function Post({ navigation }) {
           style={styles.innerInfo}
           onChangeText={(val) => handleChange("quant", val)}
         />
+        <Text style={styles.errorMsg}>{quantErr}</Text>
         <SelectList
           setSelected={(val) => handleChange("postTo", val)}
           style={styles.innerInfo}
           data={postTo}
           save="value"
         />
+        <Text style={styles.errorMsg}>{postToErr}</Text>
         <TextInput
           placeholder="Extra Information"
           multiline
           style={styles.innerInfoExtra}
           onChangeText={(val) => handleChange("extraInfo", val)}
         />
+        <Text style={styles.errorMsg}>{extraInfoErr}</Text>
         {posting === true ? (
           <ActivityIndicator
             size="large"
@@ -303,7 +418,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 12,
     borderColor: "grey",
-    marginBottom: 10,
+    //marginBottom: 10,
     borderRadius: 10,
   },
   innerInfoExtra: {
@@ -313,7 +428,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 12,
     borderColor: "grey",
-    marginVertical: 10,
+    
     borderRadius: 10,
     maxHeight: 160,
   },
@@ -329,7 +444,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     flex: 7,
   },
-  dateTimeCon: { flex: 7, backgroundColor: "white", marginVertical: 10 },
+  dateTimeCon: { flex: 7, backgroundColor: "white", },
   date: {
     alignSelf: "flex-start",
     marginLeft: -5,
@@ -345,6 +460,13 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderRadius: 10,
     flex: 1,
+  },
+  errorMsg: {
+    color: "red",
+    fontSize:15,
+    paddingLeft: 10,
+    marginTop: 2,
+    marginBottom: 10,
   },
 });
 
